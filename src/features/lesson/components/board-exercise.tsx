@@ -4,10 +4,14 @@ import { Button } from '../../../components/ui/button'
 import { Panel } from '../../../components/ui/panel'
 import { SelectField } from '../../../components/ui/select'
 import type { ComponentProps, FormEventHandler } from 'react'
+import type { LessonDefinition } from '../../../content/lessons'
+import { MoveRoute } from './move-route'
+import { Chess } from 'chess.js'
 
 type BoardOptions = NonNullable<ComponentProps<typeof Chessboard>['options']>
 
 type BoardExerciseProps = {
+  lesson: LessonDefinition
   boardOptions: BoardOptions
   hintVisible: boolean
   keyboardDestination: string
@@ -18,12 +22,8 @@ type BoardExerciseProps = {
   routeVisible: boolean
 }
 
-const destinations = [
-  { label: 'a3', value: 'a3' },
-  { label: 'c3', value: 'c3' },
-]
-
 export function BoardExercise({
+  lesson,
   boardOptions,
   hintVisible,
   keyboardDestination,
@@ -33,6 +33,8 @@ export function BoardExercise({
   completed,
   routeVisible,
 }: BoardExerciseProps) {
+  const destinations = new Chess(lesson.startFen).moves({ square: lesson.targetFrom, verbose: true })
+    .map((move) => ({ label: move.to, value: move.to }))
   return (
     <section className="min-w-0" aria-labelledby="board-heading">
       <Panel className="p-[clamp(16px,2vw,23px)] max-mobile:p-[14px] max-[390px]:p-[10px]">
@@ -52,20 +54,9 @@ export function BoardExercise({
         </div>
 
         <div className="relative mx-auto w-full max-w-[520px]">
-          <div className="relative aspect-square w-full overflow-hidden rounded-board border border-[#a8bcb2]" role="group" aria-label="Tablero de ajedrez. El caballo blanco empieza en b1.">
+          <div className="relative aspect-square w-full overflow-hidden rounded-board border border-[#a8bcb2]" role="group" aria-label={`Tablero de ajedrez. Mueve ${lesson.pieceName} desde ${lesson.targetFrom}.`}>
             <Chessboard options={boardOptions} />
-            {routeVisible && (
-              <div className="pointer-events-none absolute inset-0 z-10" aria-hidden="true">
-                <svg className="size-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none">
-                  <path
-                    className="animate-route-draw fill-none stroke-[#b18500] [stroke-dasharray:3.6_2.6] [stroke-linecap:round] [stroke-width:1.25] motion-reduce:animate-none"
-                    d="M18.75 93.75 C20 81 27 73 31.25 68.75"
-                  />
-                  <circle className="fill-signal stroke-ink [stroke-width:.7]" cx="18.75" cy="93.75" r="2.1" />
-                  <circle className="fill-signal stroke-ink [stroke-width:.7]" cx="31.25" cy="68.75" r="2.1" />
-                </svg>
-              </div>
-            )}
+            {routeVisible && <MoveRoute from={lesson.targetFrom} to={lesson.targetTo} />}
           </div>
         </div>
 
@@ -74,7 +65,7 @@ export function BoardExercise({
             <ArrowRight className="size-[17px] stroke-[2.2] max-mobile:size-[15px]" />
           </span>
           <p className="min-w-0 flex-1 text-[13px] text-[#425b55] max-mobile:pt-[3px] max-mobile:text-[11px]">
-            Arrastra el caballo desde <strong className="text-ink">b1</strong>, o tócalo y luego elige su destino.
+            Arrastra {lesson.pieceName} desde <strong className="text-ink">{lesson.targetFrom}</strong>, o toca la pieza y luego elige su destino.
           </p>
           <Button
             variant="ghost"
@@ -90,14 +81,14 @@ export function BoardExercise({
         {hintVisible && (
           <p className="mb-3 ml-[38px] flex items-start gap-2 text-[13px] leading-[1.5] text-[#3f5c54] max-mobile:ml-[31px] max-mobile:text-xs" role="note">
             <CircleHelp className="mt-px size-4 shrink-0 text-[#315f57]" aria-hidden="true" />
-            Cuenta dos filas hacia arriba desde b1; después, avanza una columna a la derecha.
+            {lesson.hint}
           </p>
         )}
 
         <form className="mt-2 border-t border-[#d5dfda] pt-[14px] max-mobile:mt-1 max-mobile:pt-[11px]" onSubmit={onKeyboardSubmit}>
           <div className="flex items-end gap-[9px] max-[390px]:gap-[6px]">
             <SelectField
-              id="knight-destination"
+              id={`${lesson.id}-destination`}
               label="¿Prefieres elegir la casilla?"
               placeholder="Elige un destino"
               value={keyboardDestination}

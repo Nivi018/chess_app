@@ -1,5 +1,5 @@
-import { KnightLessonPage } from './features/lesson/components/knight-lesson-page'
+import { LessonPage } from './features/lesson/components/lesson-page'
 
 export default function App() {
-  return <KnightLessonPage />
+  return <LessonPage />
 }

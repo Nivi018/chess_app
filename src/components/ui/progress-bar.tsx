@@ -17,7 +17,8 @@ export function ProgressBar({ value, label, className = '' }: ProgressBarProps) 
       aria-valuenow={normalizedValue}
     >
       <span
-        className={`block h-full rounded-[inherit] bg-teal transition-[width] duration-[340ms] ease-[cubic-bezier(.16,1,.3,1)] ${normalizedValue === 100 ? 'w-full' : 'w-0'}`}
+        className="block h-full rounded-[inherit] bg-teal transition-[width] duration-[340ms] ease-[cubic-bezier(.16,1,.3,1)]"
+        style={{ width: `${normalizedValue}%` }}
       />
     </div>
   )

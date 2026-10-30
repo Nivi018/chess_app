@@ -1,5 +1,5 @@
 import { ArrowDownToLine, X } from 'lucide-react'
-import type { StorageState } from '../hooks/use-knight-lesson'
+import type { StorageState } from '../hooks/use-lesson'
 
 type AppHeaderProps = {
   storageState: StorageState

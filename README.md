@@ -1,6 +1,6 @@
-# Academia de ajedrez — primera lección
+# Academia de ajedrez — lecciones iniciales
 
-Aplicación web responsive para enseñar a una persona principiante cómo se mueve el caballo. La primera entrega incluye un tablero interactivo, feedback para movimientos legales e ilegales, una pista opcional y progreso guardado localmente.
+Aplicación web responsive para principiantes con dos lecciones: movimiento del caballo y movimiento de la torre. Incluye un tablero interactivo, feedback, pistas y progreso guardado localmente por lección.
 
 ## Empezar
 
@@ -29,3 +29,11 @@ npm run build
 - El progreso se guarda en `localStorage`; no se crean cuentas ni se envían datos a un servidor.
 - No se necesita Stockfish para esta lección.
 - El plan maestro dividido está en [`docs/plan-maestro/README.md`](docs/plan-maestro/README.md).
+
+## Agregar una lección
+
+Añade una definición `LessonDefinition` en `src/content/lessons.ts`: identificador estable, posición FEN, origen y destino, textos, pista y feedback. No hace falta crear otra página ni duplicar hooks.
+
+`useLesson` controla los intentos, validación, repetición y guardado; los componentes de `src/features/lesson/components` reciben el contenido de la definición. Las pruebas del catálogo verifican que cada posición y solución sea legal.
+
+Las claves `chess-academy:<lessonId>:v1` conservan los progresos separados. La clave original del caballo no cambia. Al abrir la aplicación se ofrece la primera lección pendiente; si están todas completas se abre la primera para repasar.

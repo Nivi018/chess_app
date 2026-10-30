@@ -6,16 +6,22 @@ export const LESSON_START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w K
 
 export type MoveOutcome = 'correct' | 'other-legal' | 'illegal' | 'wrong-piece'
 
+export type MoveExercise = {
+  startFen: string
+  targetFrom: Square
+  targetTo: Square
+}
+
 export type LessonProgress = {
-  lessonId: typeof LESSON_ID
+  lessonId: string
   attempts: number
   completed: boolean
   completedAt: string | null
 }
 
-export function createInitialProgress(): LessonProgress {
+export function createInitialProgress(lessonId: string = LESSON_ID): LessonProgress {
   return {
-    lessonId: LESSON_ID,
+    lessonId,
     attempts: 0,
     completed: false,
     completedAt: null,
@@ -23,16 +29,21 @@ export function createInitialProgress(): LessonProgress {
 }
 
 export function classifyKnightMove(from: string, to: string): MoveOutcome {
-  if (from !== 'b1') return 'wrong-piece'
+  return classifyLessonMove({ startFen: LESSON_START_FEN, targetFrom: 'b1', targetTo: 'c3' }, from, to)
+}
 
-  const game = new Chess(LESSON_START_FEN)
+export function classifyLessonMove(lesson: MoveExercise, from: string, to: string): MoveOutcome {
+  if (from !== lesson.targetFrom) return 'wrong-piece'
   try {
-    game.move({ from: from as Square, to: to as Square })
+    new Chess(lesson.startFen).move({ from, to })
+    return to === lesson.targetTo ? 'correct' : 'other-legal'
   } catch {
     return 'illegal'
   }
+}
 
-  return to === 'c3' ? 'correct' : 'other-legal'
+export function progressKey(lessonId: string): string {
+  return `chess-academy:${lessonId}:v1`
 }
 
 export function recordAttempt(
@@ -50,16 +61,16 @@ export function recordAttempt(
   }
 }
 
-export function loadProgress(storage: Pick<Storage, 'getItem'>): LessonProgress {
+export function loadProgress(storage: Pick<Storage, 'getItem'>, lessonId: string = LESSON_ID): LessonProgress {
   try {
-    const stored = storage.getItem(LESSON_PROGRESS_KEY)
-    if (!stored) return createInitialProgress()
+    const stored = storage.getItem(progressKey(lessonId))
+    if (!stored) return createInitialProgress(lessonId)
 
     const value: unknown = JSON.parse(stored)
-    if (!isLessonProgress(value)) return createInitialProgress()
+    if (!isLessonProgress(value, lessonId)) return createInitialProgress(lessonId)
     return value
   } catch {
-    return createInitialProgress()
+    return createInitialProgress(lessonId)
   }
 }
 
@@ -68,19 +79,19 @@ export function saveProgress(
   storage: Pick<Storage, 'setItem'>,
 ): boolean {
   try {
-    storage.setItem(LESSON_PROGRESS_KEY, JSON.stringify(progress))
+    storage.setItem(progressKey(progress.lessonId), JSON.stringify(progress))
     return true
   } catch {
     return false
   }
 }
 
-function isLessonProgress(value: unknown): value is LessonProgress {
+function isLessonProgress(value: unknown, lessonId: string): value is LessonProgress {
   if (typeof value !== 'object' || value === null) return false
 
   const progress = value as Partial<LessonProgress>
   return (
-    progress.lessonId === LESSON_ID &&
+    progress.lessonId === lessonId &&
     Number.isInteger(progress.attempts) &&
     (progress.attempts ?? -1) >= 0 &&
     typeof progress.completed === 'boolean' &&

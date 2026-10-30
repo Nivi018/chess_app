@@ -1,10 +1,12 @@
-import { Check, CircleHelp, RotateCcw } from 'lucide-react'
+import { ArrowRight, Check, CircleHelp, RotateCcw } from 'lucide-react'
 import { Button } from '../../../components/ui/button'
 import { Panel } from '../../../components/ui/panel'
 import type { LessonProgress } from '../../../domain/lesson'
-import type { Feedback } from '../hooks/use-knight-lesson'
+import type { Feedback } from '../hooks/use-lesson'
+import type { LessonDefinition } from '../../../content/lessons'
 
 type LessonCoachProps = {
+  lesson: LessonDefinition
   completed: boolean
   progress: LessonProgress
   feedback: Feedback
@@ -12,15 +14,15 @@ type LessonCoachProps = {
   onReplay: () => void
 }
 
-export function LessonCoach({ completed, progress, feedback, replaying, onReplay }: LessonCoachProps) {
+export function LessonCoach({ lesson, completed, progress, feedback, replaying, onReplay }: LessonCoachProps) {
   return (
     <aside aria-label="Instrucciones de la lección">
       <Panel className="p-[25px_24px_19px] max-mobile:p-[19px_18px_16px]">
         <h2 className="text-[22px] leading-[1.2] font-bold tracking-[-.035em] text-ink max-mobile:text-xl">
-          Recuerda la forma de L
+          {lesson.coachTitle}
         </h2>
         <p className="my-3 mb-5 text-sm leading-[1.6] text-[#465f59] max-mobile:my-[9px] max-mobile:mb-[15px] max-mobile:text-[13px]">
-          El caballo avanza dos casillas en una dirección y una más hacia un lado. Puede saltar por encima de otras piezas.
+          {lesson.explanation}
         </p>
 
         <div className="rounded-md border border-[#d5e1d9] bg-[#edf3ee] p-[17px] max-mobile:p-[14px]">
@@ -32,15 +34,15 @@ export function LessonCoach({ completed, progress, feedback, replaying, onReplay
           </div>
           <p className="mt-[9px] text-[13px] leading-[1.55] text-[#213f3b] max-mobile:text-xs">
             {completed
-              ? 'Fíjate en el recorrido: dos casillas y una más hacia un lado.'
-              : 'Desde b1, busca la casilla que queda dos filas hacia delante y una columna a la derecha.'}
+              ? 'Observa el recorrido de tu movimiento en el tablero.'
+              : lesson.instruction}
           </p>
           {completed && (
             <div className="mt-[14px] flex items-center gap-2 text-[13px] font-bold text-ink">
-              <span className="grid h-[30px] w-[34px] place-items-center rounded-[3px] border border-[#8b6c06] bg-signal">b1</span>
-              <span aria-hidden="true">→</span>
-              <span className="grid h-[30px] w-[34px] place-items-center rounded-[3px] border border-[#8b6c06] bg-signal">c3</span>
-              <small className="ml-auto text-[11px] font-medium text-[#4d6560]">Tu primer salto</small>
+              <span className="grid h-[30px] w-[34px] place-items-center rounded-[3px] border border-[#8b6c06] bg-signal">{lesson.targetFrom}</span>
+              <ArrowRight size={16} aria-hidden="true" />
+              <span className="grid h-[30px] w-[34px] place-items-center rounded-[3px] border border-[#8b6c06] bg-signal">{lesson.targetTo}</span>
+              <small className="ml-auto text-[11px] font-medium text-[#4d6560]">Tu movimiento</small>
             </div>
           )}
         </div>
