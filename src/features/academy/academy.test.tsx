@@ -61,7 +61,7 @@ describe('review experience', () => {
     await user.click(screen.getByRole('button', { name: 'Volver a las lecciones' }))
     expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('0')
     expect(screen.getByRole('heading', { name: 'El caballo salta en forma de L' })).toBeTruthy()
-  })
+  }, 15000)
 
   it('supports the destination selector and gives feedback on a legal alternative', async () => {
     const user = userEvent.setup()

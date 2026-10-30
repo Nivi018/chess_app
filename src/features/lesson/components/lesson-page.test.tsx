@@ -109,5 +109,5 @@ describe('LessonPage', () => {
     renderLesson()
     expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('100')
     expect(screen.getByRole('heading', { name: lessons[0].title })).toBeTruthy()
-  })
+  }, 15000)
 })

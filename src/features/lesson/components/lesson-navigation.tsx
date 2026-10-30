@@ -14,9 +14,10 @@ type LessonNavigationProps = {
   onProgressClick: () => void
   reviewMode?: boolean
   onSwitchMode?: () => void
+  progressActive?: boolean
 }
 
-export function LessonNavigation({ completedIds, lessons, activeId, onSelect, progressRef, onLessonClick, onProgressClick, reviewMode = false, onSwitchMode }: LessonNavigationProps) {
+export function LessonNavigation({ completedIds, lessons, activeId, onSelect, progressRef, onLessonClick, onProgressClick, reviewMode = false, onSwitchMode, progressActive = false }: LessonNavigationProps) {
   const completedCount = completedIds.length
   return (
     <aside
@@ -26,15 +27,15 @@ export function LessonNavigation({ completedIds, lessons, activeId, onSelect, pr
       <div className="mb-[13px] ml-[10px] text-[11px] font-bold tracking-[.1em] text-[#4d6560] max-mobile:hidden">
         TU ESPACIO
       </div>
-      <Button variant="navActive" onClick={onLessonClick} className="max-mobile:min-h-[41px] max-mobile:justify-center max-mobile:px-2 max-mobile:text-xs">
+      <Button variant={progressActive ? 'nav' : 'navActive'} aria-current={!progressActive ? 'page' : undefined} onClick={onLessonClick} className="max-mobile:min-h-[41px] max-mobile:justify-center max-mobile:px-2 max-mobile:text-xs">
         <BookOpenText className="size-[18px] shrink-0" aria-hidden="true" />
         <span>{reviewMode ? 'Mis ejercicios' : 'Mis lecciones'}</span>
       </Button>
 
-      <Button variant="nav" onClick={onProgressClick} className="max-mobile:min-h-[41px] max-mobile:justify-center max-mobile:px-2 max-mobile:text-xs">
+      <Button variant={progressActive ? 'navActive' : 'nav'} aria-current={progressActive ? 'page' : undefined} onClick={onProgressClick} className="max-mobile:min-h-[41px] max-mobile:justify-center max-mobile:px-2 max-mobile:text-xs">
         <Route className="size-[18px] shrink-0" aria-hidden="true" />
         <span>Mi avance</span>
-        {completedCount === lessons.length && <Check className="ml-auto size-4 text-success-ink max-mobile:ml-0" aria-label={reviewMode ? 'Repaso completado' : 'Lecciones completadas'} />}
+        {completedCount === lessons.length && <Check className="ml-auto size-4 text-success-ink max-mobile:ml-0" aria-hidden="true" />}
       </Button>
 
       {onSwitchMode && (
@@ -44,7 +45,7 @@ export function LessonNavigation({ completedIds, lessons, activeId, onSelect, pr
         </Button>
       )}
 
-      <div ref={progressRef} className="mt-[37px] border-t border-[#c6d4cd] px-[9px] pt-[19px] max-mobile:col-span-full max-mobile:mx-[3px] max-mobile:mt-[5px] max-mobile:border-t max-mobile:pt-[10px]">
+      <div ref={progressRef} className={`mt-[37px] border-t border-[#c6d4cd] px-[9px] pt-[19px] max-mobile:col-span-full max-mobile:mx-[3px] max-mobile:mt-[5px] max-mobile:border-t max-mobile:pt-[10px] ${progressActive ? 'max-mobile:hidden' : ''}`}>
         <div className="mb-[15px] text-sm font-bold max-mobile:hidden">Tu recorrido</div>
         <div className="flex justify-between gap-2 text-xs text-[#455e58] max-mobile:text-[11px]">
           <span>{reviewMode ? 'Ejercicios resueltos' : 'Lecciones completadas'}</span>
@@ -56,7 +57,7 @@ export function LessonNavigation({ completedIds, lessons, activeId, onSelect, pr
         </p>
       </div>
 
-      <nav aria-label={reviewMode ? 'Elegir ejercicio' : 'Elegir lección'} className="mt-4 grid gap-1 max-mobile:col-span-full">
+      <nav aria-label={reviewMode ? 'Elegir ejercicio' : 'Elegir lección'} className={`mt-4 grid gap-1 max-mobile:col-span-full ${progressActive ? 'hidden' : ''}`}>
         {lessons.map((lesson, index) => (
           <Button key={lesson.id} variant={lesson.id === activeId ? 'navActive' : 'nav'} onClick={() => onSelect(lesson.id)} aria-current={lesson.id === activeId ? 'page' : undefined}>
             <span className="min-w-0 flex-1 text-xs">{index + 1}. {lesson.title}</span>

@@ -1,9 +1,9 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { AppHeader } from './app-header'
 import { BoardExercise } from './board-exercise'
 import { LessonCoach } from './lesson-coach'
 import { LessonNavigation } from './lesson-navigation'
-import { useLesson } from '../hooks/use-lesson'
+import { useLesson, type StorageState } from '../hooks/use-lesson'
 import { lessons, type LessonDefinition } from '../../../content/lessons'
 import { createInitialProgress, loadProgress, type LessonProgress } from '../../../domain/lesson'
 import { Button } from '../../../components/ui/button'
@@ -23,12 +23,21 @@ type LessonPageProps = {
   catalog?: LessonDefinition[]
   reviewMode?: boolean
   onSwitchMode?: () => void
+  onShowProgress?: () => void
+  progressContent?: ReactNode
+  initialActivityId?: string
+  initialReplay?: boolean
+  initialProgress?: Record<string, LessonProgress>
+  storageUnavailable?: boolean
+  onProgressChange?: (progress: LessonProgress, storageState: StorageState) => void
 }
 
-export function LessonPage({ catalog = lessons, reviewMode = false, onSwitchMode }: LessonPageProps) {
-  const [courseProgress, setCourseProgress] = useState(() => readCourseProgress(catalog))
+export function LessonPage({ catalog = lessons, reviewMode = false, onSwitchMode, onShowProgress, progressContent, initialActivityId, initialReplay = false, initialProgress, storageUnavailable = false, onProgressChange }: LessonPageProps) {
+  const [courseProgress, setCourseProgress] = useState(() => initialProgress
+    ? Object.fromEntries(catalog.map((activity) => [activity.id, initialProgress[activity.id] ?? createInitialProgress(activity.id)]))
+    : readCourseProgress(catalog))
   const [activeId, setActiveId] = useState(() =>
-    catalog.find((lesson) => !courseProgress[lesson.id]?.completed)?.id ?? catalog[0].id,
+    catalog.find((lesson) => lesson.id === initialActivityId)?.id ?? catalog.find((lesson) => !courseProgress[lesson.id]?.completed)?.id ?? catalog[0].id,
   )
   const definition = catalog.find((lesson) => lesson.id === activeId) ?? catalog[0]
   return (
@@ -38,35 +47,61 @@ export function LessonPage({ catalog = lessons, reviewMode = false, onSwitchMode
       catalog={catalog}
       reviewMode={reviewMode}
       onSwitchMode={onSwitchMode}
+      onShowProgress={onShowProgress}
+      progressContent={progressContent}
+      initialReplay={initialReplay && definition.id === initialActivityId}
+      focusOnMount={definition.id === initialActivityId}
+      storageUnavailable={storageUnavailable}
       courseProgress={courseProgress}
       onSelect={setActiveId}
-      onProgressChange={(progress) => setCourseProgress((current) => ({
-        ...current,
-        [progress.lessonId]: progress,
-      }))}
+      onProgressChange={(progress, storageState) => {
+        setCourseProgress((current) => ({
+          ...current,
+          [progress.lessonId]: progress,
+        }))
+        onProgressChange?.(progress, storageState)
+      }}
     />
   )
 }
 
-function LessonSession({ definition, catalog, reviewMode, onSwitchMode, courseProgress, onSelect, onProgressChange }: {
+function LessonSession({ definition, catalog, reviewMode, onSwitchMode, onShowProgress, progressContent, initialReplay, focusOnMount, storageUnavailable, courseProgress, onSelect, onProgressChange }: {
   definition: LessonDefinition
   catalog: LessonDefinition[]
   reviewMode: boolean
   onSwitchMode?: () => void
+  onShowProgress?: () => void
+  progressContent?: ReactNode
+  initialReplay: boolean
+  focusOnMount: boolean
+  storageUnavailable: boolean
   courseProgress: Record<string, LessonProgress>
   onSelect: (id: string) => void
-  onProgressChange: (progress: LessonProgress) => void
+  onProgressChange: (progress: LessonProgress, storageState: StorageState) => void
 }) {
-  const lesson = useLesson(definition, onProgressChange)
+  const lesson = useLesson(definition, onProgressChange, { initialProgress: courseProgress[definition.id], replay: initialReplay })
   const lessonRef = useRef<HTMLElement>(null)
   const progressRef = useRef<HTMLDivElement>(null)
   const completed = lesson.progress.completed && !lesson.replaying
   const lessonIndex = catalog.findIndex((item) => item.id === definition.id)
   const nextLesson = catalog[lessonIndex + 1]
+  const progressActive = Boolean(progressContent)
+  const previousProgressActive = useRef(progressActive)
+  const initialFocus = useRef(focusOnMount)
+
+  useEffect(() => {
+    if (initialFocus.current || previousProgressActive.current !== progressActive) {
+      const heading = lessonRef.current?.querySelector('h1')
+      heading?.focus({ preventScroll: true })
+      lessonRef.current?.scrollIntoView?.({ block: 'start', behavior: 'instant' })
+    }
+    previousProgressActive.current = progressActive
+    initialFocus.current = false
+  }, [progressActive])
 
   return (
     <div className="min-h-screen bg-ground font-sans text-ink">
-      <AppHeader storageState={lesson.storageState} />
+      <AppHeader storageState={storageUnavailable ? 'unavailable' : lesson.storageState} />
 
       <div className="mx-auto grid min-h-[calc(100vh-72px)] w-full max-w-[1600px] grid-cols-[228px_minmax(0,1fr)] max-tablet:grid-cols-[190px_minmax(0,1fr)] max-mobile:flex max-mobile:flex-col max-mobile:min-h-[calc(100vh-64px)]">
         <LessonNavigation
@@ -74,17 +109,22 @@ function LessonSession({ definition, catalog, reviewMode, onSwitchMode, coursePr
           lessons={catalog}
           reviewMode={reviewMode}
           onSwitchMode={onSwitchMode}
+          progressActive={progressActive}
           activeId={definition.id}
-          onSelect={onSelect}
+          onSelect={(id) => {
+            onSelect(id)
+            if (progressContent) onShowProgress?.()
+          }}
           progressRef={progressRef}
-          onLessonClick={() => lessonRef.current?.scrollIntoView({ behavior: 'smooth' })}
-          onProgressClick={() => progressRef.current?.scrollIntoView({ behavior: 'smooth' })}
+          onLessonClick={() => progressContent ? onShowProgress?.() : lessonRef.current?.scrollIntoView({ behavior: 'smooth' })}
+          onProgressClick={() => onShowProgress ? (!progressContent && onShowProgress()) : progressRef.current?.scrollIntoView({ behavior: 'smooth' })}
         />
 
         <main ref={lessonRef} className="min-w-0 px-[clamp(28px,4vw,58px)] pb-[30px] pt-10 max-wide:pt-12 max-tablet:px-[26px] max-mobile:px-4 max-mobile:pb-[22px] max-mobile:pt-[25px] max-[390px]:px-3" id="lesson">
+          {progressContent ?? <>
           <div className="mx-auto mb-7 flex max-w-[1240px] items-end justify-between gap-6 max-mobile:mb-[18px] max-mobile:items-start max-mobile:gap-[10px]">
             <div>
-              <h1 className="m-0 text-[clamp(28px,3vw,38px)] leading-[1.12] font-bold tracking-[-.045em] text-ink max-mobile:max-w-[15ch] max-mobile:text-[clamp(25px,7vw,32px)]">
+              <h1 tabIndex={-1} className="m-0 text-[clamp(28px,3vw,38px)] leading-[1.12] font-bold tracking-[-.045em] text-ink outline-none max-mobile:max-w-[15ch] max-mobile:text-[clamp(25px,7vw,32px)]">
                 {definition.title}
               </h1>
               <p className="mt-[10px] text-[15px] text-muted max-mobile:mt-2 max-mobile:max-w-[43ch] max-mobile:text-[13px]">
@@ -145,6 +185,7 @@ function LessonSession({ definition, catalog, reviewMode, onSwitchMode, coursePr
             <span>Reglas verificadas para que puedas aprender con confianza.</span>
             <span>Tu avance se queda en este dispositivo.</span>
           </footer>
+          </>}
         </main>
       </div>
     </div>

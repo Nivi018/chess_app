@@ -55,26 +55,31 @@ function feedbackFor(lesson: LessonDefinition, outcome: MoveOutcome): Feedback {
   }
 }
 
-export function useLesson(lesson: LessonDefinition, onProgressChange: (progress: LessonProgress) => void) {
-  const [progress, setProgress] = useState(() => readBrowserProgress(lesson.id))
+export function useLesson(
+  lesson: LessonDefinition,
+  onProgressChange: (progress: LessonProgress, storageState: StorageState) => void,
+  options: { initialProgress?: LessonProgress; replay?: boolean } = {},
+) {
+  const [progress, setProgress] = useState(() => options.initialProgress ?? readBrowserProgress(lesson.id))
+  const startInReplay = Boolean(options.replay && progress.completed)
   const [storageState, setStorageState] = useState<StorageState>(() =>
     browserStorageAvailable() ? (progress.attempts > 0 || progress.hintsUsed ? 'saved' : 'ready') : 'unavailable',
   )
   const [position, setPosition] = useState(() => {
     const game = new Chess(lesson.startFen)
-    if (progress.completed) {
+    if (progress.completed && !startInReplay) {
       game.move({ from: lesson.targetFrom, to: lesson.targetTo })
     }
     return game.fen()
   })
   const [feedback, setFeedback] = useState<Feedback>(() =>
-    progress.completed ? feedbackFor(lesson, 'correct') : initialFeedback,
+    progress.completed && !startInReplay ? feedbackFor(lesson, 'correct') : initialFeedback,
   )
   const [selectedSquare, setSelectedSquare] = useState<string | null>(null)
-  const [replaying, setReplaying] = useState(false)
+  const [replaying, setReplaying] = useState(startInReplay)
   const [keyboardDestination, setKeyboardDestination] = useState('')
   const [hintVisible, setHintVisible] = useState(false)
-  const [routeVisible, setRouteVisible] = useState(progress.completed)
+  const [routeVisible, setRouteVisible] = useState(progress.completed && !startInReplay)
 
   const squareStyles = useMemo(() => {
     const styles: Record<string, CSSProperties> = {
@@ -94,12 +99,14 @@ export function useLesson(lesson: LessonDefinition, onProgressChange: (progress:
 
   function persistProgress(updatedProgress: LessonProgress) {
     setProgress(updatedProgress)
-    onProgressChange(updatedProgress)
+    let state: StorageState = 'unavailable'
     try {
-      setStorageState(saveProgress(updatedProgress, window.localStorage) ? 'saved' : 'unavailable')
+      state = saveProgress(updatedProgress, window.localStorage) ? 'saved' : 'unavailable'
     } catch {
-      setStorageState('unavailable')
+      // The in-memory session remains usable when browser storage is blocked.
     }
+    setStorageState(state)
+    onProgressChange(updatedProgress, state)
   }
 
   function toggleHint() {

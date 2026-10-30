@@ -55,3 +55,11 @@ Los seis repasos originales conservan sus identificadores y resultados. Si ya es
 El progreso de repaso tiene identificadores propios y no completa ni modifica las lecciones. El resumen muestra ejercicios resueltos, intentos acumulados, pistas consultadas y soluciones al primer intento sin ayuda. Se guarda cada consulta de pista, incluso antes de intentar una jugada; repetir no reemplaza el primer resultado. Los progresos antiguos sin estas métricas siguen siendo válidos y no reciben puntuaciones inventadas.
 
 Al volver a entrar al repaso se abre el primer ejercicio pendiente, o el primero si todos están resueltos. La sección activa no se guarda: después de recargar se vuelve a las lecciones. Este repaso es práctica guiada, no una evaluación de ELO ni una prueba de dominio definitivo.
+
+## Mi avance
+
+**Mi avance** abre un panel conjunto de las diez lecciones y los diez repasos. Muestra completitud por separado, pendientes, intentos y pistas por actividad, y el primer resultado de los repasos. Si un registro antiguo no incluye ese resultado, se indica que no está registrado en lugar de inferirlo.
+
+El siguiente paso sigue una regla sencilla y visible: primera lección pendiente, después primer repaso pendiente y, cuando todo está completado, un repaso cuyo primer resultado tuvo ayuda o error. Si no hay ninguno, ofrece repetir el primer repaso. No estima dominio ni ELO, no programa repaso espaciado y no modifica el primer resultado al repetir; por eso la sugerencia histórica puede mantenerse tras practicarlo de nuevo.
+
+Desde el panel puedes abrir cualquier actividad o repetir una completada directamente desde su posición inicial. **Volver a la actividad** conserva el estado de la actividad abierta, incluidas las pistas visibles. Los resultados se actualizan durante la sesión. Si falla el guardado, se mantienen en memoria al navegar y el panel advierte que podrían perderse al recargar. No hay sincronización entre dispositivos ni actualización en directo entre pestañas.
