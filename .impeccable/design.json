@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-30T17:14:50Z",
+  "title": "Design System: Academia de ajedrez",
+  "extensions": {
+    "colorMeta": {
+      "teal-de-ruta": { "role": "primary", "displayName": "Teal de ruta", "canonical": "#147b72", "tonalRamp": ["oklch(18% 0.04 180)", "oklch(27% 0.06 180)", "oklch(36% 0.08 180)", "oklch(45% 0.10 180)", "oklch(54% 0.11 180)", "oklch(65% 0.10 180)", "oklch(78% 0.06 180)", "oklch(94% 0.02 180)"] },
+      "amarillo-senal": { "role": "secondary", "displayName": "Amarillo señal", "canonical": "#f5ce42", "tonalRamp": ["oklch(18% 0.04 95)", "oklch(28% 0.07 95)", "oklch(40% 0.11 95)", "oklch(52% 0.14 95)", "oklch(65% 0.16 95)", "oklch(78% 0.15 95)", "oklch(88% 0.10 95)", "oklch(96% 0.04 95)"] },
+      "amarillo-senal-profundo": { "role": "secondary", "displayName": "Amarillo señal profundo", "canonical": "#705400", "tonalRamp": ["oklch(17% 0.04 88)", "oklch(26% 0.06 88)", "oklch(36% 0.08 88)", "oklch(46% 0.10 88)", "oklch(57% 0.11 88)", "oklch(68% 0.10 88)", "oklch(80% 0.07 88)", "oklch(94% 0.03 88)"] },
+      "tinta": { "role": "neutral", "displayName": "Tinta", "canonical": "#173238", "tonalRamp": ["oklch(16% 0.02 210)", "oklch(25% 0.03 210)", "oklch(35% 0.04 210)", "oklch(45% 0.05 210)", "oklch(56% 0.05 210)", "oklch(68% 0.04 210)", "oklch(81% 0.03 210)", "oklch(95% 0.01 210)"] },
+      "tinta-suave": { "role": "neutral", "displayName": "Tinta suave", "canonical": "#38524e", "tonalRamp": ["oklch(18% 0.02 170)", "oklch(28% 0.03 170)", "oklch(38% 0.04 170)", "oklch(48% 0.05 170)", "oklch(59% 0.05 170)", "oklch(70% 0.04 170)", "oklch(82% 0.03 170)", "oklch(95% 0.01 170)"] },
+      "papel": { "role": "neutral", "displayName": "Papel", "canonical": "#f8faf6", "tonalRamp": ["oklch(18% 0.01 125)", "oklch(28% 0.01 125)", "oklch(39% 0.01 125)", "oklch(50% 0.01 125)", "oklch(62% 0.01 125)", "oklch(74% 0.01 125)", "oklch(86% 0.01 125)", "oklch(97% 0.01 125)"] },
+      "fondo": { "role": "neutral", "displayName": "Fondo", "canonical": "#f4f7f4", "tonalRamp": ["oklch(18% 0.01 145)", "oklch(28% 0.01 145)", "oklch(39% 0.01 145)", "oklch(50% 0.01 145)", "oklch(62% 0.01 145)", "oklch(74% 0.01 145)", "oklch(86% 0.01 145)", "oklch(97% 0.01 145)"] },
+      "verde-salvia": { "role": "tertiary", "displayName": "Verde salvia", "canonical": "#dbe6e1", "tonalRamp": ["oklch(18% 0.02 165)", "oklch(28% 0.03 165)", "oklch(39% 0.04 165)", "oklch(50% 0.05 165)", "oklch(62% 0.05 165)", "oklch(73% 0.04 165)", "oklch(84% 0.03 165)", "oklch(95% 0.01 165)"] },
+      "verde-salvia-profundo": { "role": "tertiary", "displayName": "Verde salvia profundo", "canonical": "#b9cdc2", "tonalRamp": ["oklch(18% 0.02 155)", "oklch(28% 0.03 155)", "oklch(39% 0.04 155)", "oklch(50% 0.05 155)", "oklch(61% 0.06 155)", "oklch(72% 0.05 155)", "oklch(84% 0.03 155)", "oklch(95% 0.01 155)"] },
+      "borde": { "role": "neutral", "displayName": "Borde", "canonical": "#c7d5cf", "tonalRamp": ["oklch(18% 0.01 160)", "oklch(28% 0.02 160)", "oklch(39% 0.03 160)", "oklch(50% 0.04 160)", "oklch(62% 0.04 160)", "oklch(74% 0.03 160)", "oklch(86% 0.02 160)", "oklch(96% 0.01 160)"] },
+      "texto-atenuado": { "role": "neutral", "displayName": "Texto atenuado", "canonical": "#4f6661", "tonalRamp": ["oklch(18% 0.02 170)", "oklch(28% 0.03 170)", "oklch(38% 0.04 170)", "oklch(48% 0.05 170)", "oklch(59% 0.05 170)", "oklch(70% 0.04 170)", "oklch(82% 0.03 170)", "oklch(95% 0.01 170)"] },
+      "exito-fondo": { "role": "tertiary", "displayName": "Fondo de éxito", "canonical": "#e6f3ea", "tonalRamp": ["oklch(18% 0.03 150)", "oklch(28% 0.04 150)", "oklch(39% 0.06 150)", "oklch(50% 0.07 150)", "oklch(62% 0.08 150)", "oklch(74% 0.07 150)", "oklch(86% 0.05 150)", "oklch(96% 0.02 150)"] },
+      "exito-texto": { "role": "tertiary", "displayName": "Texto de éxito", "canonical": "#205a38", "tonalRamp": ["oklch(17% 0.04 150)", "oklch(27% 0.06 150)", "oklch(37% 0.08 150)", "oklch(47% 0.10 150)", "oklch(58% 0.10 150)", "oklch(69% 0.08 150)", "oklch(81% 0.05 150)", "oklch(94% 0.02 150)"] },
+      "error-fondo": { "role": "secondary", "displayName": "Fondo de nuevo intento", "canonical": "#fff0e9", "tonalRamp": ["oklch(18% 0.03 45)", "oklch(28% 0.04 45)", "oklch(39% 0.06 45)", "oklch(50% 0.07 45)", "oklch(62% 0.08 45)", "oklch(74% 0.07 45)", "oklch(86% 0.05 45)", "oklch(97% 0.02 45)"] },
+      "error-texto": { "role": "secondary", "displayName": "Texto de nuevo intento", "canonical": "#7a3422", "tonalRamp": ["oklch(17% 0.04 40)", "oklch(27% 0.06 40)", "oklch(37% 0.08 40)", "oklch(47% 0.10 40)", "oklch(58% 0.10 40)", "oklch(69% 0.08 40)", "oklch(81% 0.05 40)", "oklch(94% 0.02 40)"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Título principal de la lección, con escala adaptable." },
+      "headline": { "displayName": "Headline", "purpose": "Título del panel de explicación." },
+      "title": { "displayName": "Title", "purpose": "Encabezados de tablero y panel." },
+      "body": { "displayName": "Body", "purpose": "Explicación e instrucciones de lectura continua." },
+      "label": { "displayName": "Label", "purpose": "Índices compactos y rótulos de orientación." }
+    },
+    "shadows": [
+      { "name": "panel-ambient", "value": "0 5px 18px rgba(23, 50, 56, .055)", "purpose": "Separación ambiental discreta de los paneles del tablero y la lección." }
+    ],
+    "motion": [
+      { "name": "route-draw", "value": "560ms cubic-bezier(.16, 1, .3, 1)", "purpose": "Dibuja la ruta discontinua al revelar el recorrido completado." },
+      { "name": "progress-fill", "value": "340ms cubic-bezier(.16, 1, .3, 1)", "purpose": "Expande la barra de progreso al completar la lección." },
+      { "name": "reduced-motion", "value": "prefers-reduced-motion: reduce; animation/transition duration .01ms", "purpose": "Reduce animación y desplazamiento suave cuando la persona lo solicita." }
+    ],
+    "breakpoints": [
+      { "name": "compact-mobile", "value": "390px" },
+      { "name": "mobile", "value": "760px" },
+      { "name": "tablet", "value": "1050px" },
+      { "name": "wide", "value": "1450px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button — Repeat",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Acción principal teal para repetir el ejercicio completado.",
+      "html": "<button class=\"ds-btn-primary\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M3 2v6h6\"/><path d=\"M3.05 11a9 9 0 1 0 2.6-5.36L3 8\"/></svg>Repetir el ejercicio</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 16px; color: #fff; background: var(--teal); border: 1px solid #0e615a; border-radius: 4px; font: 700 13px 'Segoe UI', system-ui, sans-serif; cursor: pointer; } .ds-btn-primary svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; } .ds-btn-primary:hover { background: #0e6b63; } .ds-btn-primary:focus-visible { outline: 3px solid var(--signal-deep); outline-offset: 3px; } .ds-btn-primary:active { background: #0e615a; }"
+    },
+    {
+      "name": "Signal Button — Check Move",
+      "kind": "button",
+      "refersTo": "button-signal",
+      "description": "Acción amarilla para comprobar el destino elegido en el selector accesible.",
+      "html": "<button class=\"ds-btn-signal\" type=\"button\">Comprobar</button>",
+      "css": ".ds-btn-signal { min-width: 106px; min-height: 42px; padding: 0 15px; color: var(--ink); background: var(--signal); border: 1px solid #8b6c06; border-radius: 4px; font: 700 13px 'Segoe UI', system-ui, sans-serif; cursor: pointer; } .ds-btn-signal:hover:not(:disabled) { background: #ffdc5d; } .ds-btn-signal:focus-visible { outline: 3px solid var(--signal-deep); outline-offset: 3px; } .ds-btn-signal:active:not(:disabled) { background: #e8bd2f; } .ds-btn-signal:disabled { cursor: not-allowed; opacity: .62; }"
+    },
+    {
+      "name": "Keyboard Destination Select",
+      "kind": "input",
+      "refersTo": "input-select",
+      "description": "Selector etiquetado que permite elegir una casilla sin arrastrar piezas.",
+      "html": "<label class=\"ds-field-label\" for=\"ds-destination\">¿Prefieres elegir la casilla?</label><select class=\"ds-input-select\" id=\"ds-destination\"><option>Elige un destino</option><option>a3</option><option>c3</option></select>",
+      "css": ".ds-field-label { display: block; margin-bottom: 8px; color: var(--muted); font: 600 12px 'Segoe UI', system-ui, sans-serif; } .ds-input-select { width: 100%; min-width: 0; min-height: 42px; padding: 0 12px; color: var(--ink); background: #fff; border: 1px solid #829b90; border-radius: 4px; font: 14px 'Segoe UI', system-ui, sans-serif; } .ds-input-select:focus-visible { outline: 3px solid var(--signal-deep); outline-offset: 3px; } .ds-input-select:disabled { cursor: not-allowed; opacity: .62; }"
+    },
+    {
+      "name": "Lesson Rail Navigation",
+      "kind": "nav",
+      "refersTo": "nav-active",
+      "description": "Botones de navegación con fondo salvia para el elemento activo y hover discreto.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Lección\"><button class=\"ds-nav-link ds-nav-link-active\" aria-current=\"page\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5z\"/><path d=\"M4 5.5v16M8 7h8M8 11h8\"/></svg><span>Mi primera lección</span></button><button class=\"ds-nav-link\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"5\" cy=\"6\" r=\"2\"/><circle cx=\"19\" cy=\"18\" r=\"2\"/><path d=\"M7 6h5a4 4 0 0 1 4 4v4a4 4 0 0 0 4 4\"/></svg><span>Mi avance</span></button></nav>",
+      "css": ".ds-nav { display: grid; gap: 4px; } .ds-nav-link { display: flex; align-items: center; gap: 11px; width: 100%; min-height: 46px; padding: 0 12px; color: #35514c; background: transparent; border: 0; border-radius: 5px; text-align: left; font: 500 14px 'Segoe UI', system-ui, sans-serif; cursor: pointer; } .ds-nav-link svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; } .ds-nav-link:hover { background: #d6e3dc; } .ds-nav-link-active { color: #103e39; background: #d2e0d8; font-weight: 700; } .ds-nav-link-active:hover { background: #cbdcd3; } .ds-nav-link:focus-visible { outline: 3px solid var(--signal-deep); outline-offset: 3px; }"
+    },
+    {
+      "name": "Challenge Card",
+      "kind": "custom",
+      "refersTo": "challenge-card",
+      "description": "Bloque salvia con índice de turno y una instrucción breve para la jugada.",
+      "html": "<section class=\"ds-challenge\"><div class=\"ds-challenge-label\">TU TURNO</div><p>Desde b1, busca la casilla que queda dos filas hacia delante y una columna a la derecha.</p></section>",
+      "css": ".ds-challenge { padding: 17px 17px 15px; color: #213f3b; background: #edf3ee; border: 1px solid #d5e1d9; border-radius: 5px; } .ds-challenge-label { color: #285d53; font: 700 11px 'Segoe UI', system-ui, sans-serif; letter-spacing: .08em; } .ds-challenge p { margin: 9px 0 0; color: #213f3b; font: 400 13px/1.55 'Segoe UI', system-ui, sans-serif; }"
+    },
+    {
+      "name": "Chessboard Frame",
+      "kind": "custom",
+      "description": "Cuadrado recortado con borde fino; la ruta SVG se incorpora únicamente al completar la jugada objetivo.",
+      "html": "<div class=\"ds-board-frame\" role=\"img\" aria-label=\"Tablero de ajedrez con la ruta completada del caballo\"><div class=\"ds-board-square-light\"></div><div class=\"ds-board-square-dark\"></div><svg class=\"ds-route\" viewBox=\"0 0 100 100\" aria-hidden=\"true\"><path d=\"M18.75 93.75 C20 81 27 73 31.25 68.75\"/><circle cx=\"18.75\" cy=\"93.75\" r=\"2.1\"/><circle cx=\"31.25\" cy=\"68.75\" r=\"2.1\"/></svg></div>",
+      "css": ".ds-board-frame { position: relative; width: 100%; aspect-ratio: 1; overflow: hidden; border: 1px solid #a8bcb2; border-radius: 3px; background: repeating-conic-gradient(#b9cdc2 0% 25%, #eef3ee 0% 50%) 0 0 / 25% 25%; } .ds-board-square-light, .ds-board-square-dark { display: none; } .ds-route { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; } .ds-route path { fill: none; stroke: #b18500; stroke-width: 1.25; stroke-linecap: round; stroke-dasharray: 3.6 2.6; } .ds-route circle { fill: var(--signal); stroke: var(--ink); stroke-width: .7; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Señalización de metro para aprender una jugada",
+    "overview": "La interfaz convierte un tablero desconocido en una ruta legible: teal de ruta identifica el entorno y la acción principal; amarillo señal destaca la selección y el destino; los campos de tablero en salvia mantienen el contraste tranquilo. La voz es clara y confiable: instrucciones cortas, coordenadas visibles y feedback textual acompañan la demostración sin sustituir el intento de la persona.\n\nLa composición combina superficies claras con bordes finos y sombras ambientales sutiles. La navegación y los controles siguen siendo controles web familiares, directos y accesibles; la metáfora de orientación aparece en el color y el recorrido del caballo, no en mobiliario de mapa o estación. «Academia de ajedrez» es un título neutral para este documento: el nombre visible actual de la app es provisional, no una marca aprobada.",
+    "keyCharacteristics": [
+      "Señalización cromática escasa y con función: teal de ruta, amarillo señal y verde salvia.",
+      "Explicación y feedback textuales junto a un tablero con coordenadas.",
+      "Paneles claros con bordes finos y profundidad ambiental contenida.",
+      "Controles web reconocibles, operables con ratón, tacto y teclado."
+    ],
+    "rules": [
+      { "name": "The Signal-Purpose Rule", "body": "El amarillo señal identifica una acción o una casilla relevante; no lo uses como relleno decorativo de grandes superficies.", "section": "colors" }
+    ],
+    "dos": [
+      "Do usa teal para el shell y la acción primaria, y amarillo señal para énfasis puntuales y la ruta.",
+      "Do conserva coordenadas visibles, texto de ayuda y foco de teclado distinguible.",
+      "Do combina el color de los estados con iconos y mensajes explicativos.",
+      "Do conserva los bordes finos y las sombras ambientales discretas de los paneles."
+    ],
+    "donts": [
+      "Don't presentes el rótulo de trabajo actual como nombre de marca aprobado.",
+      "Don't reveles la ruta objetivo antes de que la persona intente la jugada.",
+      "Don't conviertas la metáfora de señalización en controles o decoración que parezcan mobiliario de estación.",
+      "Don't dependas únicamente del color para comunicar foco, progreso o feedback."
+    ]
+  }
+}
