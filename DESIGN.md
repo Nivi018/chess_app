@@ -40,11 +40,31 @@ typography:
     fontSize: "14px"
     fontWeight: 400
     lineHeight: 1.6
+  body-small:
+    fontFamily: "'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
+    fontSize: "13px"
+    fontWeight: 400
+  body-compact:
+    fontFamily: "'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
+    fontSize: "12px"
+    fontWeight: 400
+  body-summary:
+    fontFamily: "'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
+    fontSize: "15px"
+    fontWeight: 400
   label:
     fontFamily: "'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
     fontSize: "11px"
     fontWeight: 700
     letterSpacing: "0.08em"
+  micro-label:
+    fontFamily: "'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
+    fontSize: "10px"
+    fontWeight: 700
+  brand:
+    fontFamily: "'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
+    fontSize: "17px"
+    fontWeight: 700
 rounded:
   board: "3px"
   sm: "4px"
@@ -139,11 +159,13 @@ La paleta combina un teal oscuro y confiable con amarillo de alta visibilidad, s
 **Character:** Sans serif de sistema, compacta y familiar, con títulos de peso marcado y texto de instrucción abierto y legible. Los rótulos pequeños en mayúsculas orientan dentro de la lección, pero no sustituyen etiquetas descriptivas.
 
 ### Hierarchy
-- **Display** (700, adaptable de 28 a 38px, line-height 1.12): encabezado principal de la lección.
+- **Display** (700, 25px en móvil y 28–38px en escritorio, line-height 1.12): encabezado principal de la lección.
 - **Headline** (700, 22px, line-height 1.2): título del panel de explicación.
 - **Title** (700, 16px, line-height 1.3): encabezados de panel y tablero.
-- **Body** (400, 14px, line-height 1.6): explicación y texto de lectura continua.
-- **Label** (700, 11px, letter-spacing 0.08em, mayúsculas cuando es un índice): rótulos compactos como «TU TURNO».
+- **Body** (400, 12–15px, line-height 1.45–1.6): texto auxiliar, instrucciones y explicación continua; los mensajes breves usan 12–13px.
+- **Label** (700, 10–12px, letter-spacing 0.08–0.1em, mayúsculas cuando es un índice): rótulos compactos como «TU TURNO» y «TU ESPACIO».
+- **Brand** (700, 15px en móvil y 17px en escritorio): identificador textual de trabajo, no una marca aprobada.
+- **Support sizes observed:** 10px, 11px, 12px, 13px, 15px y 17px se usan en etiquetas compactas, controles, texto auxiliar y el identificador de trabajo.
 
 ## Layout
 
@@ -160,7 +182,7 @@ Sistema híbrido, mayoritariamente plano: los límites se leen mediante superfic
 
 ## Shapes
 
-Las esquinas son suavemente redondeadas, no píldoras: el tablero tiene un recorte casi cuadrado; campos, botones y feedback usan radios pequeños; los paneles y pistas amplían apenas el radio. Los bordes finos mantienen visibles los límites de controles y superficies. El tablero conserva su proporción cuadrada y la ruta se dibuja como una línea curva discontinua entre casillas, después de completar la jugada objetivo.
+Las esquinas son suavemente redondeadas, no píldoras: el tablero tiene un recorte casi cuadrado; campos, botones y feedback usan radios pequeños; los paneles y pistas amplían apenas el radio. Los bordes finos mantienen visibles los límites de controles y superficies. La barra de desplazamiento toma el radio de los indicadores de progreso. El tablero conserva su proporción cuadrada y la ruta se dibuja como una línea curva discontinua entre casillas, después de completar la jugada objetivo.
 
 ## Components
 
@@ -178,7 +200,7 @@ Las esquinas son suavemente redondeadas, no píldoras: el tablero tiene un recor
 - **Internal Padding:** fluido en el panel del tablero; compacto y consistente en el panel explicativo.
 
 ### Inputs / Fields
-- **Style:** selector nativo de fondo blanco, borde salvia medio, radio pequeño y altura de 42px; siempre conserva su etiqueta visible.
+- **Style:** Dropdown PrimeReact en modo unstyled, envuelto por la capa UI propia. El trigger usa fondo blanco, borde salvia medio, radio pequeño y altura de 42px; conserva etiqueta visible y lista de opciones accesible.
 - **Focus:** contorno visible de 3px con separación de 3px, compartido con botones y enlaces.
 - **Error / Disabled:** no hay un estilo de error del selector; cuando se deshabilita, baja su opacidad y muestra cursor no permitido. El feedback de intento fallido es un bloque textual con fondo y tinta de error.
 

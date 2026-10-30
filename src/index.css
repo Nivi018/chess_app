@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --color-ink: #173238;
+  --color-ink-soft: #38524e;
+  --color-teal: #147b72;
+  --color-signal: #f5ce42;
+  --color-signal-deep: #705400;
+  --color-paper: #f8faf6;
+  --color-ground: #f4f7f4;
+  --color-sage: #dbe6e1;
+  --color-sage-deep: #b9cdc2;
+  --color-line: #c7d5cf;
+  --color-muted: #4f6661;
+  --color-success-bg: #e6f3ea;
+  --color-success-ink: #205a38;
+  --color-error-bg: #fff0e9;
+  --color-error-ink: #7a3422;
+
+  --radius-board: 3px;
+  --radius-control: 4px;
+  --radius-panel: 7px;
+  --radius-track: 8px;
+
+  --shadow-panel: 0 5px 18px rgba(23, 50, 56, .055);
+
+  --breakpoint-mobile: 47.5rem;
+  --breakpoint-tablet: 65.625rem;
+  --breakpoint-wide: 90.625rem;
+
+  --animate-route-draw: route-draw 560ms cubic-bezier(.16, 1, .3, 1) both;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  :root {
+    color-scheme: light;
+    color: var(--color-ink);
+    background: var(--color-ground);
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html {
+    min-width: 320px;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-width: 320px;
+    min-height: 100vh;
+    margin: 0;
+    font-family: var(--font-sans);
+  }
+
+  button,
+  select {
+    font: inherit;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  select:disabled {
+    cursor: not-allowed;
+    opacity: .62;
+  }
+
+  button:focus-visible,
+  select:focus-visible,
+  a:focus-visible {
+    outline: 3px solid var(--color-signal-deep);
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    color: var(--color-ink);
+    background: var(--color-signal);
+  }
+
+  ::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #eaf0ed;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border: 3px solid #eaf0ed;
+    border-radius: 8px;
+    background: #b9cdc2;
+  }
+}
+
+@keyframes route-draw {
+  from {
+    stroke-dashoffset: 21;
+    opacity: .35;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

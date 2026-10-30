@@ -22,7 +22,10 @@ npm run build
 
 ## Alcance actual
 
-- React, TypeScript, Vite, `react-chessboard` y `chess.js`.
+- React, TypeScript, Vite y Tailwind CSS 4.
+- PrimeReact 10.9.9 (MIT) se integra a través de wrappers en `src/components/ui`; las features no importan PrimeReact directamente.
+- `App.tsx` solo compone la página. La vista y el estado de la lección están separados en `src/features/lesson`.
+- `react-chessboard` y `chess.js` gestionan la representación y las reglas del ajedrez, respectivamente.
 - El progreso se guarda en `localStorage`; no se crean cuentas ni se envían datos a un servidor.
 - No se necesita Stockfish para esta lección.
 - El plan maestro dividido está en [`docs/plan-maestro/README.md`](docs/plan-maestro/README.md).

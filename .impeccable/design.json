@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-30T17:14:50Z",
+  "generatedAt": "2026-10-30T17:56:03Z",
   "title": "Design System: Academia de ajedrez",
   "extensions": {
     "colorMeta": {
@@ -25,7 +25,12 @@
       "headline": { "displayName": "Headline", "purpose": "Título del panel de explicación." },
       "title": { "displayName": "Title", "purpose": "Encabezados de tablero y panel." },
       "body": { "displayName": "Body", "purpose": "Explicación e instrucciones de lectura continua." },
-      "label": { "displayName": "Label", "purpose": "Índices compactos y rótulos de orientación." }
+      "body-small": { "displayName": "Body Small", "purpose": "Texto auxiliar de botones y feedback." },
+      "body-compact": { "displayName": "Body Compact", "purpose": "Metadatos y textos compactos de móvil." },
+      "body-summary": { "displayName": "Body Summary", "purpose": "Resumen y texto de apoyo de la lección." },
+      "label": { "displayName": "Label", "purpose": "Índices compactos y rótulos de orientación." },
+      "micro-label": { "displayName": "Micro Label", "purpose": "Estado y datos pequeños en móvil." },
+      "brand": { "displayName": "Brand", "purpose": "Rótulo provisional de la aplicación." }
     },
     "shadows": [
       { "name": "panel-ambient", "value": "0 5px 18px rgba(23, 50, 56, .055)", "purpose": "Separación ambiental discreta de los paneles del tablero y la lección." }
@@ -49,7 +54,7 @@
       "refersTo": "button-primary",
       "description": "Acción principal teal para repetir el ejercicio completado.",
       "html": "<button class=\"ds-btn-primary\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M3 2v6h6\"/><path d=\"M3.05 11a9 9 0 1 0 2.6-5.36L3 8\"/></svg>Repetir el ejercicio</button>",
-      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 16px; color: #fff; background: var(--teal); border: 1px solid #0e615a; border-radius: 4px; font: 700 13px 'Segoe UI', system-ui, sans-serif; cursor: pointer; } .ds-btn-primary svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; } .ds-btn-primary:hover { background: #0e6b63; } .ds-btn-primary:focus-visible { outline: 3px solid var(--signal-deep); outline-offset: 3px; } .ds-btn-primary:active { background: #0e615a; }"
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 16px; color: #fff; background: var(--color-teal); border: 1px solid #0e615a; border-radius: 4px; font: 700 13px 'Segoe UI', system-ui, sans-serif; cursor: pointer; } .ds-btn-primary svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; } .ds-btn-primary:hover { background: #0e6b63; } .ds-btn-primary:focus-visible { outline: 3px solid var(--color-signal-deep); outline-offset: 3px; } .ds-btn-primary:active { background: #0e615a; }"
     },
     {
       "name": "Signal Button — Check Move",
@@ -57,15 +62,15 @@
       "refersTo": "button-signal",
       "description": "Acción amarilla para comprobar el destino elegido en el selector accesible.",
       "html": "<button class=\"ds-btn-signal\" type=\"button\">Comprobar</button>",
-      "css": ".ds-btn-signal { min-width: 106px; min-height: 42px; padding: 0 15px; color: var(--ink); background: var(--signal); border: 1px solid #8b6c06; border-radius: 4px; font: 700 13px 'Segoe UI', system-ui, sans-serif; cursor: pointer; } .ds-btn-signal:hover:not(:disabled) { background: #ffdc5d; } .ds-btn-signal:focus-visible { outline: 3px solid var(--signal-deep); outline-offset: 3px; } .ds-btn-signal:active:not(:disabled) { background: #e8bd2f; } .ds-btn-signal:disabled { cursor: not-allowed; opacity: .62; }"
+      "css": ".ds-btn-signal { min-width: 106px; min-height: 42px; padding: 0 15px; color: var(--color-ink); background: var(--color-signal); border: 1px solid #8b6c06; border-radius: 4px; font: 700 13px 'Segoe UI', system-ui, sans-serif; cursor: pointer; } .ds-btn-signal:hover:not(:disabled) { background: #ffdc5d; } .ds-btn-signal:focus-visible { outline: 3px solid var(--color-signal-deep); outline-offset: 3px; } .ds-btn-signal:active:not(:disabled) { background: #e8bd2f; } .ds-btn-signal:disabled { cursor: not-allowed; opacity: .62; }"
     },
     {
-      "name": "Keyboard Destination Select",
+      "name": "Keyboard Destination Dropdown",
       "kind": "input",
       "refersTo": "input-select",
-      "description": "Selector etiquetado que permite elegir una casilla sin arrastrar piezas.",
-      "html": "<label class=\"ds-field-label\" for=\"ds-destination\">¿Prefieres elegir la casilla?</label><select class=\"ds-input-select\" id=\"ds-destination\"><option>Elige un destino</option><option>a3</option><option>c3</option></select>",
-      "css": ".ds-field-label { display: block; margin-bottom: 8px; color: var(--muted); font: 600 12px 'Segoe UI', system-ui, sans-serif; } .ds-input-select { width: 100%; min-width: 0; min-height: 42px; padding: 0 12px; color: var(--ink); background: #fff; border: 1px solid #829b90; border-radius: 4px; font: 14px 'Segoe UI', system-ui, sans-serif; } .ds-input-select:focus-visible { outline: 3px solid var(--signal-deep); outline-offset: 3px; } .ds-input-select:disabled { cursor: not-allowed; opacity: .62; }"
+      "description": "Dropdown PrimeReact unstyled, envuelto por UI propia; permite elegir una casilla sin arrastrar piezas.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-field-label\" for=\"ds-destination\">¿Prefieres elegir la casilla?</label><div class=\"ds-dropdown\" id=\"ds-destination\" role=\"combobox\" aria-expanded=\"false\" aria-haspopup=\"listbox\"><span>Elige un destino</span><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m6 9 6 6 6-6\"/></svg></div></div>",
+      "css": ".ds-field { display: grid; min-width: 0; gap: 8px; } .ds-field-label { color: var(--color-muted); font: 600 12px 'Segoe UI', system-ui, sans-serif; } .ds-dropdown { display: flex; min-height: 42px; align-items: center; justify-content: space-between; gap: 12px; padding: 0 12px; color: var(--color-ink); background: #fff; border: 1px solid #829b90; border-radius: 4px; font: 14px 'Segoe UI', system-ui, sans-serif; } .ds-dropdown svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; } .ds-dropdown:focus-visible { outline: 3px solid var(--color-signal-deep); outline-offset: 3px; } .ds-dropdown[aria-disabled='true'] { cursor: not-allowed; opacity: .62; }"
     },
     {
       "name": "Lesson Rail Navigation",
@@ -73,7 +78,7 @@
       "refersTo": "nav-active",
       "description": "Botones de navegación con fondo salvia para el elemento activo y hover discreto.",
       "html": "<nav class=\"ds-nav\" aria-label=\"Lección\"><button class=\"ds-nav-link ds-nav-link-active\" aria-current=\"page\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5z\"/><path d=\"M4 5.5v16M8 7h8M8 11h8\"/></svg><span>Mi primera lección</span></button><button class=\"ds-nav-link\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"5\" cy=\"6\" r=\"2\"/><circle cx=\"19\" cy=\"18\" r=\"2\"/><path d=\"M7 6h5a4 4 0 0 1 4 4v4a4 4 0 0 0 4 4\"/></svg><span>Mi avance</span></button></nav>",
-      "css": ".ds-nav { display: grid; gap: 4px; } .ds-nav-link { display: flex; align-items: center; gap: 11px; width: 100%; min-height: 46px; padding: 0 12px; color: #35514c; background: transparent; border: 0; border-radius: 5px; text-align: left; font: 500 14px 'Segoe UI', system-ui, sans-serif; cursor: pointer; } .ds-nav-link svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; } .ds-nav-link:hover { background: #d6e3dc; } .ds-nav-link-active { color: #103e39; background: #d2e0d8; font-weight: 700; } .ds-nav-link-active:hover { background: #cbdcd3; } .ds-nav-link:focus-visible { outline: 3px solid var(--signal-deep); outline-offset: 3px; }"
+      "css": ".ds-nav { display: grid; gap: 4px; } .ds-nav-link { display: flex; align-items: center; gap: 11px; width: 100%; min-height: 46px; padding: 0 12px; color: #35514c; background: transparent; border: 0; border-radius: 5px; text-align: left; font: 500 14px 'Segoe UI', system-ui, sans-serif; cursor: pointer; } .ds-nav-link svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; } .ds-nav-link:hover { background: #d6e3dc; } .ds-nav-link-active { color: #103e39; background: #d2e0d8; font-weight: 700; } .ds-nav-link-active:hover { background: #cbdcd3; } .ds-nav-link:focus-visible { outline: 3px solid var(--color-signal-deep); outline-offset: 3px; }"
     },
     {
       "name": "Challenge Card",
@@ -88,7 +93,7 @@
       "kind": "custom",
       "description": "Cuadrado recortado con borde fino; la ruta SVG se incorpora únicamente al completar la jugada objetivo.",
       "html": "<div class=\"ds-board-frame\" role=\"img\" aria-label=\"Tablero de ajedrez con la ruta completada del caballo\"><div class=\"ds-board-square-light\"></div><div class=\"ds-board-square-dark\"></div><svg class=\"ds-route\" viewBox=\"0 0 100 100\" aria-hidden=\"true\"><path d=\"M18.75 93.75 C20 81 27 73 31.25 68.75\"/><circle cx=\"18.75\" cy=\"93.75\" r=\"2.1\"/><circle cx=\"31.25\" cy=\"68.75\" r=\"2.1\"/></svg></div>",
-      "css": ".ds-board-frame { position: relative; width: 100%; aspect-ratio: 1; overflow: hidden; border: 1px solid #a8bcb2; border-radius: 3px; background: repeating-conic-gradient(#b9cdc2 0% 25%, #eef3ee 0% 50%) 0 0 / 25% 25%; } .ds-board-square-light, .ds-board-square-dark { display: none; } .ds-route { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; } .ds-route path { fill: none; stroke: #b18500; stroke-width: 1.25; stroke-linecap: round; stroke-dasharray: 3.6 2.6; } .ds-route circle { fill: var(--signal); stroke: var(--ink); stroke-width: .7; }"
+      "css": ".ds-board-frame { position: relative; width: 100%; aspect-ratio: 1; overflow: hidden; border: 1px solid #a8bcb2; border-radius: 3px; background: repeating-conic-gradient(#b9cdc2 0% 25%, #eef3ee 0% 50%) 0 0 / 25% 25%; } .ds-board-square-light, .ds-board-square-dark { display: none; } .ds-route { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; } .ds-route path { fill: none; stroke: #b18500; stroke-width: 1.25; stroke-linecap: round; stroke-dasharray: 3.6 2.6; } .ds-route circle { fill: var(--color-signal); stroke: var(--color-ink); stroke-width: .7; }"
     }
   ],
   "narrative": {
