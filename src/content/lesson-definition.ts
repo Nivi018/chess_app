@@ -8,6 +8,7 @@ export type LessonDefinition = MoveExercise & {
   explanation: string
   instruction: string
   hint: string
+  positionNote?: string
   pieceName: string
   feedback: { correct: string; otherLegal: string; illegal: string; wrongPiece: string }
 }

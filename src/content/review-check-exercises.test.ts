@@ -10,7 +10,7 @@ describe('check review accuracy', () => {
       'review-knight-capture-v1', 'review-rook-capture-v1', 'review-bishop-capture-v1',
       'review-queen-capture-v1', 'review-king-capture-v1', 'review-pawn-capture-v1',
     ])
-    expect(reviewExercises.slice(6)).toEqual(reviewCheckExercises)
+    expect(reviewExercises.slice(6, 10)).toEqual(reviewCheckExercises)
   })
 
   for (const exercise of reviewCheckExercises.slice(0, 3)) {

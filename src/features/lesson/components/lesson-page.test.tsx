@@ -87,17 +87,18 @@ describe('LessonPage', () => {
     const originalProgress = lessons.slice(0, 6).map((lesson) => localStorage.getItem(`chess-academy:${lesson.id}:v1`))
     renderLesson()
     expect(screen.getByRole('heading', { name: 'Sal del jaque con el rey' })).toBeTruthy()
-    expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('60')
+    expect(Number(screen.getByRole('progressbar').getAttribute('aria-valuenow'))).toBeCloseTo(600 / lessons.length)
     expect(lessons.slice(0, 6).map((lesson) => localStorage.getItem(`chess-academy:${lesson.id}:v1`))).toEqual(originalProgress)
   })
 
-  it('completes all ten lessons in order and restores the finished course', async () => {
+  it('completes all lessons including special moves and restores the finished course', async () => {
     const user = userEvent.setup()
     const { container, unmount } = renderLesson()
     for (const [index, lesson] of lessons.entries()) {
       expect(screen.getByRole('heading', { name: lesson.title })).toBeTruthy()
       fireEvent.click(container.querySelector(`[data-square="${lesson.targetFrom}"]`)!)
       fireEvent.click(container.querySelector(`[data-square="${lesson.targetTo}"]`)!)
+      if (lesson.targetPromotion) await user.click(screen.getByRole('button', { name: 'Dama' }))
       expect(screen.getByText(lesson.feedback.correct)).toBeTruthy()
       if (index < lessons.length - 1) {
         await user.click(screen.getByRole('button', { name: /Continuar:/ }))
@@ -109,5 +110,5 @@ describe('LessonPage', () => {
     renderLesson()
     expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('100')
     expect(screen.getByRole('heading', { name: lessons[0].title })).toBeTruthy()
-  }, 15000)
+  }, 20000)
 })

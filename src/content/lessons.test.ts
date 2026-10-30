@@ -18,8 +18,8 @@ describe('published lesson catalog', () => {
     it(`validates the position and solution of ${lesson.id}`, () => {
       const game = new Chess(lesson.startFen)
       expect(game.get(lesson.targetFrom)).toBeDefined()
-      expect(classifyLessonMove(lesson, lesson.targetFrom, lesson.targetTo)).toBe('correct')
-      expect(() => game.move({ from: lesson.targetFrom, to: lesson.targetTo })).not.toThrow()
+      expect(classifyLessonMove(lesson, lesson.targetFrom, lesson.targetTo, lesson.targetPromotion)).toBe('correct')
+      expect(() => game.move({ from: lesson.targetFrom, to: lesson.targetTo, promotion: lesson.targetPromotion })).not.toThrow()
     })
   }
 

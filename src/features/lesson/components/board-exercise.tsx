@@ -3,9 +3,12 @@ import { Chessboard } from 'react-chessboard'
 import { Button } from '../../../components/ui/button'
 import { Panel } from '../../../components/ui/panel'
 import { SelectField } from '../../../components/ui/select'
-import type { ComponentProps, FormEventHandler } from 'react'
+import { useEffect, useRef, type ComponentProps, type FormEventHandler } from 'react'
 import type { LessonDefinition } from '../../../content/lessons'
-import { MoveRoute } from './move-route'
+import { SolutionRoute } from './solution-route'
+import { PromotionPicker } from './promotion-picker'
+import type { PendingPromotion } from '../hooks/use-lesson'
+import type { PromotionPiece } from '../../../domain/lesson'
 import { Chess } from 'chess.js'
 
 type BoardOptions = NonNullable<ComponentProps<typeof Chessboard>['options']>
@@ -21,6 +24,9 @@ type BoardExerciseProps = {
   completed: boolean
   routeVisible: boolean
   prompt?: string
+  pendingPromotion?: PendingPromotion | null
+  onPromotionChoose?: (piece: PromotionPiece) => void
+  onPromotionCancel?: () => void
 }
 
 export function BoardExercise({
@@ -34,20 +40,33 @@ export function BoardExercise({
   completed,
   routeVisible,
   prompt,
+  pendingPromotion,
+  onPromotionChoose,
+  onPromotionCancel,
 }: BoardExerciseProps) {
-  const destinations = new Chess(lesson.startFen).moves({ square: lesson.targetFrom, verbose: true })
-    .map((move) => ({ label: move.to, value: move.to }))
+  const destinations = [...new Set(new Chess(lesson.startFen).moves({ square: lesson.targetFrom, verbose: true }).map((move) => move.to))]
+    .map((to) => ({ label: to, value: to }))
+  const formRef = useRef<HTMLFormElement>(null)
+  const wasPromoting = useRef(false)
+  useEffect(() => {
+    if (wasPromoting.current && !pendingPromotion) {
+      if (completed) formRef.current?.closest('section')?.querySelector<HTMLElement>('h2')?.focus()
+      else formRef.current?.querySelector<HTMLButtonElement>('button[type="submit"]')?.focus()
+    }
+    wasPromoting.current = Boolean(pendingPromotion)
+  }, [pendingPromotion, completed])
   return (
     <section className="min-w-0" aria-labelledby="board-heading">
       <Panel className="p-[clamp(16px,2vw,23px)] max-mobile:p-[14px] max-[390px]:p-[10px]">
         <div className="mb-4 flex items-start justify-between gap-4 max-tablet:block max-mobile:mb-[11px] max-mobile:flex max-mobile:gap-[7px]">
           <div>
-            <h2 id="board-heading" className="text-base font-bold tracking-[-.02em] text-ink max-mobile:text-sm">
+            <h2 id="board-heading" tabIndex={-1} className="text-base font-bold tracking-[-.02em] text-ink outline-none max-mobile:text-sm">
               Mira el tablero
             </h2>
             <p className="mt-[5px] max-w-[45ch] text-[13px] leading-[1.45] text-muted max-mobile:max-w-[38ch] max-mobile:text-[11px]">
               {prompt ?? 'Las letras y los números te ayudan a encontrar cada casilla.'}
             </p>
+            {lesson.positionNote && <p className="mt-2 max-w-[55ch] text-xs leading-relaxed text-ink-soft">{lesson.positionNote}</p>}
           </div>
           <span className="flex items-center gap-[7px] whitespace-nowrap pt-0.5 text-xs text-[#415c56] max-tablet:mt-[9px] max-mobile:mt-0 max-mobile:self-center max-mobile:text-[10px] max-[390px]:max-w-20 max-[390px]:whitespace-normal">
             <span className="size-2 rounded-full border border-[#8b6c06] bg-signal max-mobile:size-[7px]" aria-hidden="true" />
@@ -58,7 +77,7 @@ export function BoardExercise({
         <div className="relative mx-auto w-full max-w-[520px]">
           <div className="relative aspect-square w-full overflow-hidden rounded-board border border-[#a8bcb2]" role="group" aria-label={`Tablero de ajedrez. Mueve ${lesson.pieceName} desde ${lesson.targetFrom}.`}>
             <Chessboard options={boardOptions} />
-            {routeVisible && <MoveRoute from={lesson.targetFrom} to={lesson.targetTo} />}
+            {routeVisible && <SolutionRoute exercise={lesson} />}
           </div>
         </div>
 
@@ -87,7 +106,9 @@ export function BoardExercise({
           </p>
         )}
 
-        <form className="mt-2 border-t border-[#d5dfda] pt-[14px] max-mobile:mt-1 max-mobile:pt-[11px]" onSubmit={onKeyboardSubmit}>
+        {pendingPromotion && onPromotionChoose && onPromotionCancel && <PromotionPicker promotion={pendingPromotion} onChoose={onPromotionChoose} onCancel={onPromotionCancel} />}
+
+        <form ref={formRef} className="mt-2 border-t border-[#d5dfda] pt-[14px] max-mobile:mt-1 max-mobile:pt-[11px]" onSubmit={onKeyboardSubmit}>
           <div className="flex items-end gap-[9px] max-[390px]:gap-[6px]">
             <SelectField
               id={`${lesson.id}-destination`}
@@ -96,13 +117,13 @@ export function BoardExercise({
               value={keyboardDestination}
               options={destinations}
               onValueChange={onKeyboardDestinationChange}
-              disabled={completed}
+              disabled={completed || Boolean(pendingPromotion)}
               className="flex-1"
             />
             <Button
               variant="signal"
               type="submit"
-              disabled={completed}
+              disabled={completed || Boolean(pendingPromotion)}
               className="max-[390px]:min-w-[92px] max-[390px]:px-[9px]"
             >
               Comprobar

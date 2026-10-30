@@ -1,6 +1,6 @@
 # Academia de ajedrez — lecciones iniciales
 
-Aplicación web responsive para principiantes con diez lecciones y diez ejercicios de repaso. Enseña los movimientos de las seis piezas, tres formas de responder al jaque y un primer jaque mate. Incluye un tablero interactivo, feedback, pistas y progreso guardado localmente por actividad.
+Aplicación web responsive para principiantes con trece lecciones y trece ejercicios de repaso. Enseña los movimientos de las seis piezas, tres formas de responder al jaque, un primer jaque mate y las jugadas especiales. Incluye un tablero interactivo, feedback, pistas y progreso guardado localmente por actividad.
 
 ## Empezar
 
@@ -32,25 +32,33 @@ npm run build
 
 ## Agregar una lección
 
-Añade un archivo de contenido en `src/content/lessons/` con una definición `LessonDefinition` (tipo en `src/content/lesson-definition.ts`) y regístrala en `src/content/lessons.ts`: identificador estable, posición FEN, origen y destino, textos, pista y feedback. No hace falta crear otra página ni duplicar hooks.
+Añade un archivo de contenido en `src/content/lessons/` con una definición `LessonDefinition` (tipo en `src/content/lesson-definition.ts`) y regístrala en `src/content/lessons.ts`: identificador estable, posición FEN, origen y destino, textos, pista y feedback. Las promociones incluyen `targetPromotion` (`q`, `r`, `b` o `n`). Usa `positionNote` para explicar antecedentes relevantes, como la última jugada o los derechos de enroque de la posición inicial. No hace falta crear otra página ni duplicar hooks.
 
 `useLesson` controla los intentos, validación, repetición y guardado; los componentes de `src/features/lesson/components` reciben el contenido de la definición. Las pruebas del catálogo verifican que cada posición y solución sea legal.
 
 Las claves `chess-academy:<lessonId>:v1` conservan los progresos separados. La clave original del caballo no cambia. Al abrir la aplicación se ofrece la primera lección pendiente; si están todas completas se abre la primera para repasar.
 
-Las primeras seis lecciones introducen los movimientos básicos. Las cuatro siguientes enseñan a salir del jaque moviendo el rey, bloqueando con un alfil o capturando al atacante, y a dar un mate con dama y rey. La última explicación distingue el mate del ahogado. Cada ejercicio pide una jugada concreta; otras defensas legales no se consideran ilegales, pero no completan ese objetivo guiado.
+Las primeras seis lecciones introducen los movimientos básicos. Las cuatro siguientes enseñan a salir del jaque moviendo el rey, bloqueando con un alfil o capturando al atacante, y a dar un mate con dama y rey. La explicación del mate distingue el mate del ahogado. Cada ejercicio pide una jugada concreta; otras defensas legales no se consideran ilegales, pero no completan ese objetivo guiado.
 
-Las pruebas verifican que las tres defensas quitan el jaque y que la posición final del mate es realmente jaque mate, no solo jaque o ahogado. Al ampliar el catálogo, las seis lecciones anteriores conservan sus claves y resultados: si ya estaban completas, el curso muestra 6 de 10 y abre la primera lección de jaque.
+Las pruebas verifican que las tres defensas quitan el jaque y que la posición final del mate es realmente jaque mate, no solo jaque o ahogado. Todos los identificadores anteriores se conservan: diez lecciones completas ahora representan 10 de 13 y abren la primera lección especial pendiente.
 
-La captura al paso, promoción y enroque requieren lecciones posteriores; el ejercicio inicial del peón se centra en su avance inicial.
+## Jugadas especiales
+
+Las lecciones 11–13 introducen el enroque corto, la promoción a dama y la captura al paso. Sus repasos practican el enroque largo, una promoción a caballo para dar jaque y otra captura al paso. El contenido está en `src/content/lessons/special-moves.ts` y `src/content/review-special-exercises.ts`.
+
+- **Enroque:** mueve el rey hasta su destino; la torre se coloca automáticamente. Tras acertar se dibujan ambos recorridos. La validación comprueba derechos, camino libre y casillas del rey fuera de ataque. Volver al origen después de mover no recupera el derecho a enrocar.
+- **Promoción:** tras seleccionar un destino legal, aparecen cuatro opciones dentro del panel: dama, torre, alfil y caballo. No hay elección automática ni intento registrado hasta confirmar una pieza. Cancelar no cuenta como intento. Una promoción legal distinta del objetivo recibe feedback y permite reintentar. El selector de destinos no repite una casilla por cada opción de promoción.
+- **Captura al paso:** la nota de posición declara el avance rival de dos casillas inmediatamente anterior. El destino vacío y la retirada del peón contiguo se calculan con las reglas. Se prueban su caducidad y los casos donde la captura expondría al rey.
+
+Los derechos de enroque y la oportunidad de captura al paso proceden de la FEN curada y su nota; no hay todavía una partida de varios turnos ni un historial interactivo. Al repetir se restaura la posición completa, incluidos esos derechos. La promoción pendiente se conserva al visitar **Mi avance** y volver, pero no al recargar; aún no representa un intento confirmado.
 
 ## Repasar movimientos
 
-Desde la navegación, abre **Repasar movimientos** para resolver diez retos en posiciones nuevas: seis capturas, una salida del jaque con el rey, un bloqueo con torre, una captura del caballo que da jaque y un mate con torre y rey. Los datos están en `src/content/review-exercises.ts` y `src/content/review-check-exercises.ts`; se reutilizan el controlador, el tablero, las pistas y los wrappers de UI. La explicación y el recorrido solo se muestran después de acertar.
+Desde la navegación, abre **Repasar movimientos** para resolver trece retos en posiciones nuevas: seis capturas, cuatro retos de jaque y mate y tres jugadas especiales. El catálogo está en `src/content/review-exercises.ts`, con los retos de jaque y especiales en archivos separados; se reutilizan el controlador, el tablero, las pistas y los wrappers de UI. La explicación y el recorrido solo se muestran después de acertar.
 
-Los cuatro retos nuevos no indican la casilla de destino en el enunciado. Cada uno tiene una única solución con la pieza solicitada; las pistas opcionales sí explican la jugada. Las pruebas verifican las defensas y el mate con las reglas de ajedrez, no solo con la casilla esperada.
+Los retos de jaque y jugadas especiales no indican la casilla de destino en el enunciado. Las pistas opcionales sí explican la jugada. Las pruebas verifican las defensas, el mate y los efectos especiales con las reglas de ajedrez, no solo con la casilla esperada.
 
-Los seis repasos originales conservan sus identificadores y resultados. Si ya estaban resueltos, el avance pasa a 6 de 10 y se abre el primer reto de jaque pendiente, sin reiniciar los intentos, las pistas ni los primeros resultados.
+Los diez repasos anteriores conservan sus identificadores y resultados. Si ya estaban resueltos, el avance pasa a 10 de 13 y se abre el primer reto especial pendiente, sin reiniciar los intentos, las pistas ni los primeros resultados.
 
 El progreso de repaso tiene identificadores propios y no completa ni modifica las lecciones. El resumen muestra ejercicios resueltos, intentos acumulados, pistas consultadas y soluciones al primer intento sin ayuda. Se guarda cada consulta de pista, incluso antes de intentar una jugada; repetir no reemplaza el primer resultado. Los progresos antiguos sin estas métricas siguen siendo válidos y no reciben puntuaciones inventadas.
 
@@ -58,7 +66,7 @@ Al volver a entrar al repaso se abre el primer ejercicio pendiente, o el primero
 
 ## Mi avance
 
-**Mi avance** abre un panel conjunto de las diez lecciones y los diez repasos. Muestra completitud por separado, pendientes, intentos y pistas por actividad, y el primer resultado de los repasos. Si un registro antiguo no incluye ese resultado, se indica que no está registrado en lugar de inferirlo.
+**Mi avance** abre un panel conjunto de las trece lecciones y los trece repasos. Muestra completitud por separado, pendientes, intentos y pistas por actividad, y el primer resultado de los repasos. Si un registro antiguo no incluye ese resultado, se indica que no está registrado en lugar de inferirlo.
 
 El siguiente paso sigue una regla sencilla y visible: primera lección pendiente, después primer repaso pendiente y, cuando todo está completado, un repaso cuyo primer resultado tuvo ayuda o error. Si no hay ninguno, ofrece repetir el primer repaso. No estima dominio ni ELO, no programa repaso espaciado y no modifica el primer resultado al repetir; por eso la sugerencia histórica puede mantenerse tras practicarlo de nuevo.
 

@@ -5,11 +5,13 @@ export const LESSON_ID = 'knight-first-move'
 export const LESSON_START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
 
 export type MoveOutcome = 'correct' | 'other-legal' | 'illegal' | 'wrong-piece'
+export type PromotionPiece = 'q' | 'r' | 'b' | 'n'
 
 export type MoveExercise = {
   startFen: string
   targetFrom: Square
   targetTo: Square
+  targetPromotion?: PromotionPiece
 }
 
 export type LessonProgress = {
@@ -34,14 +36,33 @@ export function classifyKnightMove(from: string, to: string): MoveOutcome {
   return classifyLessonMove({ startFen: LESSON_START_FEN, targetFrom: 'b1', targetTo: 'c3' }, from, to)
 }
 
-export function classifyLessonMove(lesson: MoveExercise, from: string, to: string): MoveOutcome {
+export function classifyLessonMove(lesson: MoveExercise, from: string, to: string, promotion?: PromotionPiece): MoveOutcome {
   if (from !== lesson.targetFrom) return 'wrong-piece'
   try {
-    new Chess(lesson.startFen).move({ from, to })
-    return to === lesson.targetTo ? 'correct' : 'other-legal'
+    const move = new Chess(lesson.startFen).move({ from, to, promotion })
+    return to === lesson.targetTo && move.promotion === lesson.targetPromotion ? 'correct' : 'other-legal'
   } catch {
     return 'illegal'
   }
+}
+
+export function solveExercise(lesson: MoveExercise) {
+  const game = new Chess(lesson.startFen)
+  const move = game.move({ from: lesson.targetFrom, to: lesson.targetTo, promotion: lesson.targetPromotion })
+  const rank = move.color === 'w' ? '1' : '8'
+  const rookRoute = move.isKingsideCastle()
+    ? { from: `h${rank}` as Square, to: `f${rank}` as Square }
+    : move.isQueensideCastle()
+      ? { from: `a${rank}` as Square, to: `d${rank}` as Square }
+      : undefined
+  return { position: game.fen(), move, rookRoute }
+}
+
+export function promotionChoices(lesson: MoveExercise, from: string, to: string): PromotionPiece[] {
+  const moves = new Chess(lesson.startFen).moves({ verbose: true })
+  return (['q', 'r', 'b', 'n'] as const).filter((piece) =>
+    moves.some((move) => move.from === from && move.to === to && move.promotion === piece),
+  )
 }
 
 export function progressKey(lessonId: string): string {

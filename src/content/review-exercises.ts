@@ -1,5 +1,6 @@
 import type { LessonDefinition } from './lesson-definition'
 import { reviewCheckExercises } from './review-check-exercises'
+import { reviewSpecialExercises } from './review-special-exercises'
 
 export const reviewExercises: LessonDefinition[] = [
   {
@@ -111,4 +112,5 @@ export const reviewExercises: LessonDefinition[] = [
     },
   },
   ...reviewCheckExercises,
+  ...reviewSpecialExercises,
 ]

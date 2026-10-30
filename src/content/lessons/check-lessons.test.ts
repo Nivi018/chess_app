@@ -9,12 +9,12 @@ import { classifyLessonMove } from '../../domain/lesson'
 
 describe('check and checkmate lessons', () => {
   it('appends four lessons without replacing the six original activities', () => {
-    expect(lessons).toHaveLength(10)
+    expect(lessons.length).toBeGreaterThanOrEqual(10)
     expect(lessons.slice(0, 6).map((lesson) => lesson.id)).toEqual([
       'knight-first-move', 'rook-first-move', 'bishop-first-move',
       'queen-first-move', 'king-first-move', 'pawn-first-move',
     ])
-    expect(lessons.slice(6)).toEqual([checkEscapeLesson, checkBlockLesson, checkCaptureLesson, checkmateLesson])
+    expect(lessons.slice(6, 10)).toEqual([checkEscapeLesson, checkBlockLesson, checkCaptureLesson, checkmateLesson])
   })
 
   for (const lesson of [checkEscapeLesson, checkBlockLesson, checkCaptureLesson]) {

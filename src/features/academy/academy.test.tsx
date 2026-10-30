@@ -48,6 +48,7 @@ describe('review experience', () => {
     for (const [index, exercise] of reviewExercises.entries()) {
       fireEvent.click(container.querySelector(`[data-square="${exercise.targetFrom}"]`)!)
       fireEvent.click(container.querySelector(`[data-square="${exercise.targetTo}"]`)!)
+      if (exercise.targetPromotion) await user.click(screen.getByRole('button', { name: 'Caballo' }))
       expect(screen.getByText(exercise.feedback.correct)).toBeTruthy()
       if (index < reviewExercises.length - 1) await user.click(screen.getByRole('button', { name: /Continuar:/ }))
     }
@@ -61,7 +62,7 @@ describe('review experience', () => {
     await user.click(screen.getByRole('button', { name: 'Volver a las lecciones' }))
     expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('0')
     expect(screen.getByRole('heading', { name: 'El caballo salta en forma de L' })).toBeTruthy()
-  }, 15000)
+  }, 20000)
 
   it('supports the destination selector and gives feedback on a legal alternative', async () => {
     const user = userEvent.setup()
@@ -94,7 +95,7 @@ describe('review experience', () => {
     await user.click(screen.getByRole('button', { name: 'Repasar movimientos' }))
     const exercise = reviewExercises[6]
     expect(screen.getByRole('heading', { name: exercise.title })).toBeTruthy()
-    expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('60')
+    expect(Number(screen.getByRole('progressbar').getAttribute('aria-valuenow'))).toBeCloseTo(600 / reviewExercises.length)
     expect(screen.queryByText(exercise.explanation)).toBeNull()
     expect(screen.queryByText(exercise.hint)).toBeNull()
     fireEvent.click(container.querySelector('[data-square="a1"]')!)
@@ -113,6 +114,6 @@ describe('review experience', () => {
     renderAcademy()
     await user.click(screen.getByRole('button', { name: 'Repasar movimientos' }))
     expect(screen.getByRole('heading', { name: reviewExercises[7].title })).toBeTruthy()
-    expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('70')
+    expect(Number(screen.getByRole('progressbar').getAttribute('aria-valuenow'))).toBeCloseTo(700 / reviewExercises.length)
   })
 })

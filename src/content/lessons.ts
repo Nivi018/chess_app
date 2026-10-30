@@ -9,6 +9,7 @@ import { checkEscapeLesson } from './lessons/check-escape'
 import { checkBlockLesson } from './lessons/check-block'
 import { checkCaptureLesson } from './lessons/check-capture'
 import { checkmateLesson } from './lessons/checkmate'
+import { specialMoveLessons } from './lessons/special-moves'
 
 export type { LessonDefinition } from './lesson-definition'
 
@@ -47,4 +48,5 @@ export const lessons: LessonDefinition[] = [
   checkBlockLesson,
   checkCaptureLesson,
   checkmateLesson,
+  ...specialMoveLessons,
 ]

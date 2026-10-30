@@ -148,6 +148,9 @@ function LessonSession({ definition, catalog, reviewMode, onSwitchMode, onShowPr
               onKeyboardSubmit={lesson.handleKeyboardSubmit}
               completed={lesson.progress.completed && !lesson.replaying}
               routeVisible={lesson.routeVisible}
+              pendingPromotion={lesson.pendingPromotion}
+              onPromotionChoose={lesson.choosePromotion}
+              onPromotionCancel={lesson.cancelPromotion}
             />
             <LessonCoach
               lesson={definition}

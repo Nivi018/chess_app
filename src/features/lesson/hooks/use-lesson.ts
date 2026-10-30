@@ -1,5 +1,4 @@
 import { useMemo, useState, type CSSProperties, type FormEvent } from 'react'
-import { Chess } from 'chess.js'
 import {
   classifyLessonMove,
   createInitialProgress,
@@ -7,9 +6,12 @@ import {
   loadProgress,
   recordAttempt,
   recordHint,
+  promotionChoices,
+  solveExercise,
   saveProgress,
   type LessonProgress,
   type MoveOutcome,
+  type PromotionPiece,
 } from '../../../domain/lesson'
 import type { LessonDefinition } from '../../../content/lessons'
 
@@ -19,6 +21,7 @@ export type Feedback = {
 }
 
 export type StorageState = 'ready' | 'saved' | 'unavailable'
+export type PendingPromotion = { from: string; to: string; choices: PromotionPiece[] }
 
 const initialFeedback: Feedback = {
   tone: 'neutral',
@@ -65,13 +68,9 @@ export function useLesson(
   const [storageState, setStorageState] = useState<StorageState>(() =>
     browserStorageAvailable() ? (progress.attempts > 0 || progress.hintsUsed ? 'saved' : 'ready') : 'unavailable',
   )
-  const [position, setPosition] = useState(() => {
-    const game = new Chess(lesson.startFen)
-    if (progress.completed && !startInReplay) {
-      game.move({ from: lesson.targetFrom, to: lesson.targetTo })
-    }
-    return game.fen()
-  })
+  const [position, setPosition] = useState(() => progress.completed && !startInReplay
+    ? solveExercise(lesson).position
+    : lesson.startFen)
   const [feedback, setFeedback] = useState<Feedback>(() =>
     progress.completed && !startInReplay ? feedbackFor(lesson, 'correct') : initialFeedback,
   )
@@ -80,6 +79,7 @@ export function useLesson(
   const [keyboardDestination, setKeyboardDestination] = useState('')
   const [hintVisible, setHintVisible] = useState(false)
   const [routeVisible, setRouteVisible] = useState(progress.completed && !startInReplay)
+  const [pendingPromotion, setPendingPromotion] = useState<PendingPromotion | null>(null)
 
   const squareStyles = useMemo(() => {
     const styles: Record<string, CSSProperties> = {
@@ -114,9 +114,9 @@ export function useLesson(
     setHintVisible((visible) => !visible)
   }
 
-  function submitMove(from: string, to: string): boolean {
+  function submitMove(from: string, to: string, promotion?: PromotionPiece): boolean {
     if (progress.completed && !replaying) return false
-    const outcome = classifyLessonMove(lesson, from, to)
+    const outcome = classifyLessonMove(lesson, from, to, promotion)
     persistProgress(recordAttempt(progress, outcome))
 
     setFeedback(feedbackFor(lesson, outcome))
@@ -125,24 +125,47 @@ export function useLesson(
 
     if (outcome !== 'correct') return false
 
-    const game = new Chess(lesson.startFen)
-    game.move({ from: lesson.targetFrom, to: lesson.targetTo })
-    setPosition(game.fen())
+    setPosition(solveExercise(lesson).position)
     setRouteVisible(true)
     setHintVisible(false)
     setReplaying(false)
     return true
   }
 
+  function requestMove(from: string, to: string): boolean {
+    if ((progress.completed && !replaying) || pendingPromotion) return false
+    const choices = from === lesson.targetFrom ? promotionChoices(lesson, from, to) : []
+    if (choices.length) {
+      setPendingPromotion({ from, to, choices })
+      setSelectedSquare(null)
+      setFeedback({ tone: 'neutral', message: `Para llegar a ${to}, elige la pieza de promoción. La jugada aún no se ha comprobado.` })
+      return false
+    }
+    return submitMove(from, to)
+  }
+
+  function choosePromotion(piece: PromotionPiece) {
+    if (!pendingPromotion?.choices.includes(piece)) return
+    const { from, to } = pendingPromotion
+    setPendingPromotion(null)
+    submitMove(from, to, piece)
+  }
+
+  function cancelPromotion() {
+    setPendingPromotion(null)
+    setKeyboardDestination('')
+    setFeedback({ tone: 'neutral', message: 'Promoción cancelada. El peón sigue en su casilla inicial; no se ha sumado ningún intento.' })
+  }
+
   function handleBoardSquareClick(square: string) {
-    if (progress.completed && !replaying) return
+    if ((progress.completed && !replaying) || pendingPromotion) return
 
     if (selectedSquare) {
       if (square === selectedSquare) {
         setSelectedSquare(null)
         return
       }
-      submitMove(selectedSquare, square)
+      requestMove(selectedSquare, square)
       return
     }
 
@@ -159,11 +182,12 @@ export function useLesson(
 
   function handleKeyboardSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (pendingPromotion) return
     if (!keyboardDestination) {
       setFeedback({ tone: 'try-again', message: 'Elige una casilla de destino antes de comprobar la jugada.' })
       return
     }
-    submitMove(lesson.targetFrom, keyboardDestination)
+    requestMove(lesson.targetFrom, keyboardDestination)
   }
 
   function replayLesson() {
@@ -174,6 +198,7 @@ export function useLesson(
     setRouteVisible(false)
     setFeedback(initialFeedback)
     setReplaying(true)
+    setPendingPromotion(null)
   }
 
   const boardOptions = {
@@ -193,10 +218,10 @@ export function useLesson(
     numericNotationStyle: { fontSize: '12px', fontWeight: 700, top: 3, left: 5 },
     squareStyles,
     canDragPiece: ({ square }: { square: string | null }) =>
-      (!progress.completed || replaying) && square === lesson.targetFrom,
+      (!progress.completed || replaying) && !pendingPromotion && square === lesson.targetFrom,
     onPieceDrop: ({ sourceSquare, targetSquare }: { sourceSquare: string; targetSquare: string | null }) => {
       if (!targetSquare) return false
-      return submitMove(sourceSquare, targetSquare)
+      return requestMove(sourceSquare, targetSquare)
     },
     onSquareClick: ({ square }: { square: string }) => handleBoardSquareClick(square),
   }
@@ -214,5 +239,8 @@ export function useLesson(
     routeVisible,
     toggleHint,
     storageState,
+    pendingPromotion,
+    choosePromotion,
+    cancelPromotion,
   }
 }

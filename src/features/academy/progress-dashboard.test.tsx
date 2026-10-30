@@ -29,7 +29,7 @@ describe('Mi avance', () => {
     await user.click(screen.getByRole('button', { name: 'Mi avance' }))
     expect(screen.getByRole('heading', { name: 'Mi avance' })).toBe(document.activeElement)
     expect(screen.getByRole('button', { name: 'Mi avance' }).getAttribute('aria-current')).toBe('page')
-    expect(screen.getAllByText('0 / 10')).toHaveLength(3)
+    expect(screen.getAllByText(`0 / ${lessons.length}`)).toHaveLength(3)
     expect(screen.getByText(/primera lección pendiente/)).toBeTruthy()
     expect(screen.getByText(/no tu ELO/)).toBeTruthy()
     await user.click(screen.getByRole('button', { name: 'Continuar aprendiendo' }))
@@ -62,7 +62,7 @@ describe('Mi avance', () => {
     expect(screen.getByRole('progressbar', { name: 'Repasos resueltos en Mi avance' }).getAttribute('aria-valuenow')).toBe('0')
     await user.click(screen.getByRole('button', { name: 'Continuar aprendiendo' }))
     expect(screen.getByRole('heading', { name: reviewExercises[0].title })).toBeTruthy()
-    expect(within(screen.getByRole('region', { name: 'Tu repaso' })).getAllByText('0 / 10')).toHaveLength(2)
+    expect(within(screen.getByRole('region', { name: 'Tu repaso' })).getAllByText(`0 / ${reviewExercises.length}`)).toHaveLength(2)
   })
 
   it('opens a suggested completed review in replay without revealing the answer or changing its first result', async () => {
@@ -95,7 +95,7 @@ describe('Mi avance', () => {
     await user.click(screen.getByRole('button', { name: 'Mi avance' }))
     expect(screen.getByText('1 repaso completado sin dato del primer intento.')).toBeTruthy()
     expect(screen.getByText('Primer intento sin registrar')).toBeTruthy()
-    expect(screen.getByText('0 de 10 al primer intento sin pistas.')).toBeTruthy()
+    expect(screen.getByText(`0 de ${reviewExercises.length} al primer intento sin pistas.`)).toBeTruthy()
   })
 
   it('keeps session results across modes when writing storage fails and warns in Mi avance', async () => {
@@ -108,10 +108,10 @@ describe('Mi avance', () => {
     expect(screen.getByText('No se pudo guardar en este navegador')).toBeTruthy()
     await user.click(screen.getByRole('button', { name: 'Mi avance' }))
     expect(screen.getByText(/al recargar podrías perder/)).toBeTruthy()
-    expect(screen.getByRole('progressbar', { name: 'Lecciones completadas en Mi avance' }).getAttribute('aria-valuenow')).toBe('10')
+    expect(Number(screen.getByRole('progressbar', { name: 'Lecciones completadas en Mi avance' }).getAttribute('aria-valuenow'))).toBeCloseTo(100 / lessons.length)
     await user.click(screen.getByRole('button', { name: `Repetir: ${lessons[0].title}` }))
     expect(screen.getByRole('heading', { name: lessons[0].title })).toBeTruthy()
-    expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('10')
+    expect(Number(screen.getByRole('progressbar').getAttribute('aria-valuenow'))).toBeCloseTo(100 / lessons.length)
     expect(screen.getByRole('button', { name: 'Comprobar' }).hasAttribute('disabled')).toBe(false)
   })
 
