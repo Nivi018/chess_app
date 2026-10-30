@@ -5,6 +5,10 @@ import { bishopLesson } from './lessons/bishop'
 import { queenLesson } from './lessons/queen'
 import { kingLesson } from './lessons/king'
 import { pawnLesson } from './lessons/pawn'
+import { checkEscapeLesson } from './lessons/check-escape'
+import { checkBlockLesson } from './lessons/check-block'
+import { checkCaptureLesson } from './lessons/check-capture'
+import { checkmateLesson } from './lessons/checkmate'
 
 export type { LessonDefinition } from './lesson-definition'
 
@@ -39,4 +43,8 @@ export const lessons: LessonDefinition[] = [
   queenLesson,
   kingLesson,
   pawnLesson,
+  checkEscapeLesson,
+  checkBlockLesson,
+  checkCaptureLesson,
+  checkmateLesson,
 ]

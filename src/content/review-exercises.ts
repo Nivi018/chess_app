@@ -1,4 +1,5 @@
 import type { LessonDefinition } from './lesson-definition'
+import { reviewCheckExercises } from './review-check-exercises'
 
 export const reviewExercises: LessonDefinition[] = [
   {
@@ -109,4 +110,5 @@ export const reviewExercises: LessonDefinition[] = [
       wrongPiece: 'Para este reto, selecciona el peón blanco de c4.',
     },
   },
+  ...reviewCheckExercises,
 ]

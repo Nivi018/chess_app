@@ -9,7 +9,7 @@ describe('published lesson catalog', () => {
   })
 
   it('covers all six pieces without changing the existing lesson IDs', () => {
-    expect(lessons.map((lesson) => new Chess(lesson.startFen).get(lesson.targetFrom)?.type))
+    expect(lessons.slice(0, 6).map((lesson) => new Chess(lesson.startFen).get(lesson.targetFrom)?.type))
       .toEqual(['n', 'r', 'b', 'q', 'k', 'p'])
     expect(lessons.slice(0, 2).map((lesson) => lesson.id)).toEqual(['knight-first-move', 'rook-first-move'])
   })

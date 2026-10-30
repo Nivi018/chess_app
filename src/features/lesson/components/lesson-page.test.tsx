@@ -80,7 +80,18 @@ describe('LessonPage', () => {
     expect(Number(screen.getByRole('progressbar').getAttribute('aria-valuenow'))).toBeCloseTo(200 / lessons.length)
   })
 
-  it('completes all six lessons in order and restores the finished course', async () => {
+  it('preserves the six completed lessons and starts the new check lessons', () => {
+    for (const lesson of lessons.slice(0, 6)) {
+      saveProgress(recordAttempt(createInitialProgress(lesson.id), 'correct'), localStorage)
+    }
+    const originalProgress = lessons.slice(0, 6).map((lesson) => localStorage.getItem(`chess-academy:${lesson.id}:v1`))
+    renderLesson()
+    expect(screen.getByRole('heading', { name: 'Sal del jaque con el rey' })).toBeTruthy()
+    expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('60')
+    expect(lessons.slice(0, 6).map((lesson) => localStorage.getItem(`chess-academy:${lesson.id}:v1`))).toEqual(originalProgress)
+  })
+
+  it('completes all ten lessons in order and restores the finished course', async () => {
     const user = userEvent.setup()
     const { container, unmount } = renderLesson()
     for (const [index, lesson] of lessons.entries()) {

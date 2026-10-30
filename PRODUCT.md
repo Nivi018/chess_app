@@ -28,13 +28,14 @@ The first experience is a responsive web app for desktop and mobile browsers. It
 
 ## Capabilities and Constraints
 
-- Current scope: six interactive lessons for an absolute beginner, sharing a reusable lesson definition and controller.
+- Current scope: ten interactive lessons for an absolute beginner, sharing a reusable lesson definition and controller.
 - Chess legality and the lesson solution must be checked by application logic, not inferred from generated text.
 - Save lesson completion/progress locally in the browser. No sign-in, API, database, multiplayer, or Stockfish requirement for this slice.
 - First lesson: introduce how the knight moves from the initial position and invite the learner to play b1–c3.
 - Second lesson: introduce the rook on a simplified board and practice a1–a4. Learners can switch lessons, continue after completing one, and keep independent local progress.
 - Additional lessons cover the bishop (c1–f4), queen (d1–g4), king (e1–f2), and pawn (e2–e4). They introduce basic movement with simplified positions. Special moves remain future work.
-- Review mode provides six single-move captures in new positions, one per piece. Explanations are withheld until success and hints are optional. Separate local review records track attempts, hint consultations and unassisted first-attempt success; replay does not overwrite the first result. Review results do not imply a rating or definitive mastery.
+- Lessons seven through ten introduce check escapes (Ke1–f1), blocking (Bc1–e3), capturing the checking piece (Bb5xe2), and a supported queen mate (Qg6–g7). Tests verify that each defense removes check and the mating solution is checkmate, not stalemate. The mate explanation distinguishes stalemate from checkmate. Existing lesson IDs and saved records remain unchanged; six previous completions now represent 6 of 10 lessons.
+- Review mode provides ten single-move challenges in new positions: six captures (one per piece), a king escape, a rook block, capture of a checking knight, and rook-and-king mate. The four check challenges withhold the destination in their prompts and each has one solution with the requested piece. Explanations are withheld until success and hints are optional. Separate local review records track attempts, hint consultations and unassisted first-attempt success; replay does not overwrite the first result. The six original review IDs and results remain unchanged; previous completion now represents 6 of 10 reviews. Review results do not imply a rating or definitive mastery.
 - Keep the app usable with touch and mouse, and provide clear text feedback and accessible controls.
 - Product name, visual identity, and deployment target are undecided; do not present a working label as an approved brand.
 
