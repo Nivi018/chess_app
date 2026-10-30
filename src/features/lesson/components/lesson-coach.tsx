@@ -12,17 +12,18 @@ type LessonCoachProps = {
   feedback: Feedback
   replaying: boolean
   onReplay: () => void
+  reviewMode?: boolean
 }
 
-export function LessonCoach({ lesson, completed, progress, feedback, replaying, onReplay }: LessonCoachProps) {
+export function LessonCoach({ lesson, completed, progress, feedback, replaying, onReplay, reviewMode = false }: LessonCoachProps) {
   return (
-    <aside aria-label="Instrucciones de la lección">
+    <aside aria-label={reviewMode ? 'Instrucciones del repaso' : 'Instrucciones de la lección'}>
       <Panel className="p-[25px_24px_19px] max-mobile:p-[19px_18px_16px]">
         <h2 className="text-[22px] leading-[1.2] font-bold tracking-[-.035em] text-ink max-mobile:text-xl">
-          {lesson.coachTitle}
+          {reviewMode && !completed ? 'Resuelve antes de ver la explicación' : lesson.coachTitle}
         </h2>
         <p className="my-3 mb-5 text-sm leading-[1.6] text-[#465f59] max-mobile:my-[9px] max-mobile:mb-[15px] max-mobile:text-[13px]">
-          {lesson.explanation}
+          {reviewMode && !completed ? 'Intenta resolverlo recordando lo aprendido. La explicación aparecerá después de la jugada correcta; puedes pedir una pista si la necesitas.' : lesson.explanation}
         </p>
 
         <div className="rounded-md border border-[#d5e1d9] bg-[#edf3ee] p-[17px] max-mobile:p-[14px]">

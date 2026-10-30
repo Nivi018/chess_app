@@ -6,6 +6,7 @@ import {
   LESSON_PROGRESS_KEY,
   loadProgress,
   recordAttempt,
+  recordHint,
   saveProgress,
   type LessonProgress,
   type MoveOutcome,
@@ -57,7 +58,7 @@ function feedbackFor(lesson: LessonDefinition, outcome: MoveOutcome): Feedback {
 export function useLesson(lesson: LessonDefinition, onProgressChange: (progress: LessonProgress) => void) {
   const [progress, setProgress] = useState(() => readBrowserProgress(lesson.id))
   const [storageState, setStorageState] = useState<StorageState>(() =>
-    browserStorageAvailable() ? (progress.attempts > 0 ? 'saved' : 'ready') : 'unavailable',
+    browserStorageAvailable() ? (progress.attempts > 0 || progress.hintsUsed ? 'saved' : 'ready') : 'unavailable',
   )
   const [position, setPosition] = useState(() => {
     const game = new Chess(lesson.startFen)
@@ -91,18 +92,25 @@ export function useLesson(lesson: LessonDefinition, onProgressChange: (progress:
     return styles
   }, [lesson, routeVisible, selectedSquare])
 
-  function submitMove(from: string, to: string): boolean {
-    if (progress.completed && !replaying) return false
-    const outcome = classifyLessonMove(lesson, from, to)
-    const updatedProgress = recordAttempt(progress, outcome)
+  function persistProgress(updatedProgress: LessonProgress) {
     setProgress(updatedProgress)
     onProgressChange(updatedProgress)
-
     try {
       setStorageState(saveProgress(updatedProgress, window.localStorage) ? 'saved' : 'unavailable')
     } catch {
       setStorageState('unavailable')
     }
+  }
+
+  function toggleHint() {
+    if (!hintVisible && (!progress.completed || replaying)) persistProgress(recordHint(progress))
+    setHintVisible((visible) => !visible)
+  }
+
+  function submitMove(from: string, to: string): boolean {
+    if (progress.completed && !replaying) return false
+    const outcome = classifyLessonMove(lesson, from, to)
+    persistProgress(recordAttempt(progress, outcome))
 
     setFeedback(feedbackFor(lesson, outcome))
     setSelectedSquare(null)
@@ -197,7 +205,7 @@ export function useLesson(lesson: LessonDefinition, onProgressChange: (progress:
     replaying,
     replayLesson,
     routeVisible,
-    setHintVisible,
+    toggleHint,
     storageState,
   }
 }

@@ -17,6 +17,8 @@ export type LessonProgress = {
   attempts: number
   completed: boolean
   completedAt: string | null
+  hintsUsed?: number
+  firstAttemptCorrect?: boolean
 }
 
 export function createInitialProgress(lessonId: string = LESSON_ID): LessonProgress {
@@ -58,7 +60,14 @@ export function recordAttempt(
     attempts: progress.attempts + 1,
     completed: progress.completed || outcome === 'correct',
     completedAt: isFirstCompletion ? completedAt : progress.completedAt,
+    firstAttemptCorrect: progress.attempts === 0
+      ? outcome === 'correct' && (progress.hintsUsed ?? 0) === 0
+      : progress.firstAttemptCorrect,
   }
+}
+
+export function recordHint(progress: LessonProgress): LessonProgress {
+  return { ...progress, hintsUsed: (progress.hintsUsed ?? 0) + 1 }
 }
 
 export function loadProgress(storage: Pick<Storage, 'getItem'>, lessonId: string = LESSON_ID): LessonProgress {
@@ -95,6 +104,8 @@ function isLessonProgress(value: unknown, lessonId: string): value is LessonProg
     Number.isInteger(progress.attempts) &&
     (progress.attempts ?? -1) >= 0 &&
     typeof progress.completed === 'boolean' &&
-    (typeof progress.completedAt === 'string' || progress.completedAt === null)
+    (typeof progress.completedAt === 'string' || progress.completedAt === null) &&
+    (progress.hintsUsed === undefined || (Number.isInteger(progress.hintsUsed) && progress.hintsUsed >= 0)) &&
+    (progress.firstAttemptCorrect === undefined || typeof progress.firstAttemptCorrect === 'boolean')
   )
 }

@@ -1,17 +1,12 @@
 import { knightLesson } from './knight-lesson'
-import { LESSON_START_FEN, type MoveExercise } from '../domain/lesson'
+import { LESSON_START_FEN } from '../domain/lesson'
+import type { LessonDefinition } from './lesson-definition'
+import { bishopLesson } from './lessons/bishop'
+import { queenLesson } from './lessons/queen'
+import { kingLesson } from './lessons/king'
+import { pawnLesson } from './lessons/pawn'
 
-export type LessonDefinition = MoveExercise & {
-  id: string
-  title: string
-  summary: string
-  coachTitle: string
-  explanation: string
-  instruction: string
-  hint: string
-  pieceName: string
-  feedback: { correct: string; otherLegal: string; illegal: string; wrongPiece: string }
-}
+export type { LessonDefinition } from './lesson-definition'
 
 export const lessons: LessonDefinition[] = [
   {
@@ -40,4 +35,8 @@ export const lessons: LessonDefinition[] = [
       wrongPiece: 'En este ejercicio, mueve la torre que está en a1.',
     },
   },
+  bishopLesson,
+  queenLesson,
+  kingLesson,
+  pawnLesson,
 ]

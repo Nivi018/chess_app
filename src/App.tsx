@@ -1,5 +1,5 @@
-import { LessonPage } from './features/lesson/components/lesson-page'
+import { Academy } from './features/academy/academy'
 
 export default function App() {
-  return <LessonPage />
+  return <Academy />
 }

@@ -1,5 +1,5 @@
 import type { RefObject } from 'react'
-import { BookOpenText, Check, CircleHelp, Route } from 'lucide-react'
+import { BookOpenText, Check, CircleHelp, RotateCcw, Route } from 'lucide-react'
 import { Button } from '../../../components/ui/button'
 import { ProgressBar } from '../../../components/ui/progress-bar'
 import type { LessonDefinition } from '../../../content/lessons'
@@ -12,9 +12,11 @@ type LessonNavigationProps = {
   progressRef: RefObject<HTMLDivElement | null>
   onLessonClick: () => void
   onProgressClick: () => void
+  reviewMode?: boolean
+  onSwitchMode?: () => void
 }
 
-export function LessonNavigation({ completedIds, lessons, activeId, onSelect, progressRef, onLessonClick, onProgressClick }: LessonNavigationProps) {
+export function LessonNavigation({ completedIds, lessons, activeId, onSelect, progressRef, onLessonClick, onProgressClick, reviewMode = false, onSwitchMode }: LessonNavigationProps) {
   const completedCount = completedIds.length
   return (
     <aside
@@ -26,27 +28,35 @@ export function LessonNavigation({ completedIds, lessons, activeId, onSelect, pr
       </div>
       <Button variant="navActive" onClick={onLessonClick} className="max-mobile:min-h-[41px] max-mobile:justify-center max-mobile:px-2 max-mobile:text-xs">
         <BookOpenText className="size-[18px] shrink-0" aria-hidden="true" />
-        <span>Mis lecciones</span>
+        <span>{reviewMode ? 'Mis ejercicios' : 'Mis lecciones'}</span>
       </Button>
+
       <Button variant="nav" onClick={onProgressClick} className="max-mobile:min-h-[41px] max-mobile:justify-center max-mobile:px-2 max-mobile:text-xs">
         <Route className="size-[18px] shrink-0" aria-hidden="true" />
         <span>Mi avance</span>
-        {completedCount === lessons.length && <Check className="ml-auto size-4 text-success-ink max-mobile:ml-0" aria-label="Lecciones completadas" />}
+        {completedCount === lessons.length && <Check className="ml-auto size-4 text-success-ink max-mobile:ml-0" aria-label={reviewMode ? 'Repaso completado' : 'Lecciones completadas'} />}
       </Button>
+
+      {onSwitchMode && (
+        <Button variant="nav" onClick={onSwitchMode} className="max-mobile:col-span-full max-mobile:justify-center max-mobile:text-xs">
+          <RotateCcw size={18} aria-hidden="true" />
+          <span>{reviewMode ? 'Volver a las lecciones' : 'Repasar movimientos'}</span>
+        </Button>
+      )}
 
       <div ref={progressRef} className="mt-[37px] border-t border-[#c6d4cd] px-[9px] pt-[19px] max-mobile:col-span-full max-mobile:mx-[3px] max-mobile:mt-[5px] max-mobile:border-t max-mobile:pt-[10px]">
         <div className="mb-[15px] text-sm font-bold max-mobile:hidden">Tu recorrido</div>
         <div className="flex justify-between gap-2 text-xs text-[#455e58] max-mobile:text-[11px]">
-          <span>Lecciones completadas</span>
+          <span>{reviewMode ? 'Ejercicios resueltos' : 'Lecciones completadas'}</span>
           <span className="tabular-nums font-bold text-ink">{completedCount} / {lessons.length}</span>
         </div>
-        <ProgressBar value={completedCount / lessons.length * 100} label="Progreso del curso" className="mt-[10px] max-mobile:mt-[7px] max-mobile:h-[5px]" />
+        <ProgressBar value={completedCount / lessons.length * 100} label={reviewMode ? 'Progreso del repaso' : 'Progreso del curso'} className="mt-[10px] max-mobile:mt-[7px] max-mobile:h-[5px]" />
         <p className="mt-[9px] text-xs text-[#4d6560] max-mobile:hidden">
           {completedCount ? 'Sigue practicando a tu ritmo.' : 'Una jugada a la vez.'}
         </p>
       </div>
 
-      <nav aria-label="Elegir lección" className="mt-4 grid gap-1 max-mobile:col-span-full">
+      <nav aria-label={reviewMode ? 'Elegir ejercicio' : 'Elegir lección'} className="mt-4 grid gap-1 max-mobile:col-span-full">
         {lessons.map((lesson, index) => (
           <Button key={lesson.id} variant={lesson.id === activeId ? 'navActive' : 'nav'} onClick={() => onSelect(lesson.id)} aria-current={lesson.id === activeId ? 'page' : undefined}>
             <span className="min-w-0 flex-1 text-xs">{index + 1}. {lesson.title}</span>

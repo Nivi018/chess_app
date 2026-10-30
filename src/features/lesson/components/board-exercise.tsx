@@ -20,6 +20,7 @@ type BoardExerciseProps = {
   onKeyboardSubmit: FormEventHandler<HTMLFormElement>
   completed: boolean
   routeVisible: boolean
+  prompt?: string
 }
 
 export function BoardExercise({
@@ -32,6 +33,7 @@ export function BoardExercise({
   onKeyboardSubmit,
   completed,
   routeVisible,
+  prompt,
 }: BoardExerciseProps) {
   const destinations = new Chess(lesson.startFen).moves({ square: lesson.targetFrom, verbose: true })
     .map((move) => ({ label: move.to, value: move.to }))
@@ -44,7 +46,7 @@ export function BoardExercise({
               Mira el tablero
             </h2>
             <p className="mt-[5px] max-w-[45ch] text-[13px] leading-[1.45] text-muted max-mobile:max-w-[38ch] max-mobile:text-[11px]">
-              Las letras y los números te ayudan a encontrar cada casilla.
+              {prompt ?? 'Las letras y los números te ayudan a encontrar cada casilla.'}
             </p>
           </div>
           <span className="flex items-center gap-[7px] whitespace-nowrap pt-0.5 text-xs text-[#415c56] max-tablet:mt-[9px] max-mobile:mt-0 max-mobile:self-center max-mobile:text-[10px] max-[390px]:max-w-20 max-[390px]:whitespace-normal">

@@ -7,9 +7,10 @@ import { useLesson } from '../hooks/use-lesson'
 import { lessons, type LessonDefinition } from '../../../content/lessons'
 import { createInitialProgress, loadProgress, type LessonProgress } from '../../../domain/lesson'
 import { Button } from '../../../components/ui/button'
+import { ReviewResults } from './review-results'
 
-function readCourseProgress(): Record<string, LessonProgress> {
-  return Object.fromEntries(lessons.map((lesson) => {
+function readCourseProgress(catalog: LessonDefinition[]): Record<string, LessonProgress> {
+  return Object.fromEntries(catalog.map((lesson) => {
     try {
       return [lesson.id, loadProgress(window.localStorage, lesson.id)]
     } catch {
@@ -18,16 +19,25 @@ function readCourseProgress(): Record<string, LessonProgress> {
   }))
 }
 
-export function LessonPage() {
-  const [courseProgress, setCourseProgress] = useState(readCourseProgress)
+type LessonPageProps = {
+  catalog?: LessonDefinition[]
+  reviewMode?: boolean
+  onSwitchMode?: () => void
+}
+
+export function LessonPage({ catalog = lessons, reviewMode = false, onSwitchMode }: LessonPageProps) {
+  const [courseProgress, setCourseProgress] = useState(() => readCourseProgress(catalog))
   const [activeId, setActiveId] = useState(() =>
-    lessons.find((lesson) => !courseProgress[lesson.id]?.completed)?.id ?? lessons[0].id,
+    catalog.find((lesson) => !courseProgress[lesson.id]?.completed)?.id ?? catalog[0].id,
   )
-  const definition = lessons.find((lesson) => lesson.id === activeId) ?? lessons[0]
+  const definition = catalog.find((lesson) => lesson.id === activeId) ?? catalog[0]
   return (
     <LessonSession
       key={definition.id}
       definition={definition}
+      catalog={catalog}
+      reviewMode={reviewMode}
+      onSwitchMode={onSwitchMode}
       courseProgress={courseProgress}
       onSelect={setActiveId}
       onProgressChange={(progress) => setCourseProgress((current) => ({
@@ -38,8 +48,11 @@ export function LessonPage() {
   )
 }
 
-function LessonSession({ definition, courseProgress, onSelect, onProgressChange }: {
+function LessonSession({ definition, catalog, reviewMode, onSwitchMode, courseProgress, onSelect, onProgressChange }: {
   definition: LessonDefinition
+  catalog: LessonDefinition[]
+  reviewMode: boolean
+  onSwitchMode?: () => void
   courseProgress: Record<string, LessonProgress>
   onSelect: (id: string) => void
   onProgressChange: (progress: LessonProgress) => void
@@ -48,8 +61,8 @@ function LessonSession({ definition, courseProgress, onSelect, onProgressChange 
   const lessonRef = useRef<HTMLElement>(null)
   const progressRef = useRef<HTMLDivElement>(null)
   const completed = lesson.progress.completed && !lesson.replaying
-  const lessonIndex = lessons.findIndex((item) => item.id === definition.id)
-  const nextLesson = lessons[lessonIndex + 1]
+  const lessonIndex = catalog.findIndex((item) => item.id === definition.id)
+  const nextLesson = catalog[lessonIndex + 1]
 
   return (
     <div className="min-h-screen bg-ground font-sans text-ink">
@@ -57,8 +70,10 @@ function LessonSession({ definition, courseProgress, onSelect, onProgressChange 
 
       <div className="mx-auto grid min-h-[calc(100vh-72px)] w-full max-w-[1600px] grid-cols-[228px_minmax(0,1fr)] max-tablet:grid-cols-[190px_minmax(0,1fr)] max-mobile:flex max-mobile:flex-col max-mobile:min-h-[calc(100vh-64px)]">
         <LessonNavigation
-          completedIds={lessons.filter((item) => courseProgress[item.id]?.completed).map((item) => item.id)}
-          lessons={lessons}
+          completedIds={catalog.filter((item) => courseProgress[item.id]?.completed).map((item) => item.id)}
+          lessons={catalog}
+          reviewMode={reviewMode}
+          onSwitchMode={onSwitchMode}
           activeId={definition.id}
           onSelect={onSelect}
           progressRef={progressRef}
@@ -77,17 +92,18 @@ function LessonSession({ definition, courseProgress, onSelect, onProgressChange 
               </p>
             </div>
             <span className="shrink-0 pb-[3px] text-[13px] font-bold text-ink max-mobile:pt-[5px] max-mobile:text-[11px]">
-              Lección {lessonIndex + 1} <span className="font-medium text-muted">de {lessons.length}</span>
+              {reviewMode ? 'Ejercicio' : 'Lección'} {lessonIndex + 1} <span className="font-medium text-muted">de {catalog.length}</span>
             </span>
           </div>
 
           <div className="mx-auto grid max-w-[1240px] grid-cols-[minmax(0,1fr)_minmax(280px,330px)] items-start gap-[26px] max-wide:grid-cols-[minmax(0,1fr)_340px] max-wide:gap-[30px] max-tablet:grid-cols-[minmax(0,1fr)_290px] max-tablet:gap-[18px] max-mobile:grid-cols-1 max-mobile:gap-[14px]">
             <BoardExercise
+              prompt={reviewMode ? definition.instruction : undefined}
               lesson={definition}
               boardOptions={lesson.boardOptions}
               hintVisible={lesson.hintVisible}
               keyboardDestination={lesson.keyboardDestination}
-              onHintToggle={() => lesson.setHintVisible((visible) => !visible)}
+              onHintToggle={lesson.toggleHint}
               onKeyboardDestinationChange={lesson.handleKeyboardDestinationChange}
               onKeyboardSubmit={lesson.handleKeyboardSubmit}
               completed={lesson.progress.completed && !lesson.replaying}
@@ -95,6 +111,7 @@ function LessonSession({ definition, courseProgress, onSelect, onProgressChange 
             />
             <LessonCoach
               lesson={definition}
+              reviewMode={reviewMode}
               completed={completed}
               progress={lesson.progress}
               feedback={lesson.feedback}
@@ -112,11 +129,17 @@ function LessonSession({ definition, courseProgress, onSelect, onProgressChange 
           )}
           {completed && !nextLesson && (
             <p className="mx-auto mt-5 max-w-[1240px] text-sm text-success-ink">
-              {lessons.every((item) => courseProgress[item.id]?.completed)
-                ? 'Has terminado las lecciones disponibles. Puedes volver a cualquiera para practicar.'
-                : 'Lección completada. Puedes elegir otra lección en Mis lecciones.'}
+              {catalog.every((item) => courseProgress[item.id]?.completed)
+                ? reviewMode
+                  ? 'Has terminado el repaso. Puedes repetir los ejercicios o volver a las lecciones.'
+                  : 'Has terminado las lecciones disponibles. Puedes volver a cualquiera para practicar.'
+                : reviewMode
+                  ? 'Ejercicio resuelto. Puedes elegir otro en la lista de repaso.'
+                  : 'Lección completada. Puedes elegir otra lección en Mis lecciones.'}
             </p>
           )}
+
+          {reviewMode && <div className="mt-6"><ReviewResults progresses={Object.values(courseProgress)} total={catalog.length} /></div>}
 
           <footer className="mx-auto mt-5 flex max-w-[1240px] justify-between gap-[14px] border-t border-[#d5dfda] pt-[14px] text-[11px] text-[#58706a] max-mobile:mt-[14px] max-mobile:flex-col max-mobile:gap-[5px] max-mobile:text-[10px]">
             <span>Reglas verificadas para que puedas aprender con confianza.</span>

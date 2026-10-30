@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { PrimeProvider } from '../../../providers/prime-provider'
 import { LessonPage } from './lesson-page'
 import { createInitialProgress, recordAttempt, saveProgress } from '../../../domain/lesson'
+import { lessons } from '../../../content/lessons'
 
 function renderLesson() {
   return render(
@@ -53,11 +54,11 @@ describe('LessonPage', () => {
     await user.click(screen.getByRole('button', { name: /Continuar:/ }))
     expect(screen.getByRole('heading', { name: 'La torre se mueve en línea recta' })).toBeTruthy()
     expect(screen.getByText('TU TURNO')).toBeTruthy()
-    expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('50')
+    expect(Number(screen.getByRole('progressbar').getAttribute('aria-valuenow'))).toBeCloseTo(100 / lessons.length)
     fireEvent.click(container.querySelector('[data-square="a1"]')!)
     fireEvent.click(container.querySelector('[data-square="a4"]')!)
-    expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('100')
-    expect(screen.getByText(/Has terminado las lecciones disponibles/)).toBeTruthy()
+    expect(Number(screen.getByRole('progressbar').getAttribute('aria-valuenow'))).toBeCloseTo(200 / lessons.length)
+    expect(screen.getByRole('button', { name: /Continuar: El alfil/ })).toBeTruthy()
     await user.click(screen.getByRole('button', { name: /1\. El caballo/ }))
     expect(screen.getByRole('heading', { name: 'El caballo salta en forma de L' })).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Repetir el ejercicio' })).toBeTruthy()
@@ -67,6 +68,35 @@ describe('LessonPage', () => {
     saveProgress(recordAttempt(createInitialProgress(), 'correct'), localStorage)
     renderLesson()
     expect(screen.getByRole('heading', { name: 'La torre se mueve en línea recta' })).toBeTruthy()
-    expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('50')
+    expect(Number(screen.getByRole('progressbar').getAttribute('aria-valuenow'))).toBeCloseTo(100 / lessons.length)
+  })
+
+  it('preserves both original completions when the course gains four lessons', () => {
+    for (const lesson of lessons.slice(0, 2)) {
+      saveProgress(recordAttempt(createInitialProgress(lesson.id), 'correct'), localStorage)
+    }
+    renderLesson()
+    expect(screen.getByRole('heading', { name: 'El alfil recorre las diagonales' })).toBeTruthy()
+    expect(Number(screen.getByRole('progressbar').getAttribute('aria-valuenow'))).toBeCloseTo(200 / lessons.length)
+  })
+
+  it('completes all six lessons in order and restores the finished course', async () => {
+    const user = userEvent.setup()
+    const { container, unmount } = renderLesson()
+    for (const [index, lesson] of lessons.entries()) {
+      expect(screen.getByRole('heading', { name: lesson.title })).toBeTruthy()
+      fireEvent.click(container.querySelector(`[data-square="${lesson.targetFrom}"]`)!)
+      fireEvent.click(container.querySelector(`[data-square="${lesson.targetTo}"]`)!)
+      expect(screen.getByText(lesson.feedback.correct)).toBeTruthy()
+      if (index < lessons.length - 1) {
+        await user.click(screen.getByRole('button', { name: /Continuar:/ }))
+      }
+    }
+    expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('100')
+    expect(screen.getByText(/Has terminado las lecciones disponibles/)).toBeTruthy()
+    unmount()
+    renderLesson()
+    expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('100')
+    expect(screen.getByRole('heading', { name: lessons[0].title })).toBeTruthy()
   })
 })

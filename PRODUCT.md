@@ -28,11 +28,13 @@ The first experience is a responsive web app for desktop and mobile browsers. It
 
 ## Capabilities and Constraints
 
-- Current scope: two interactive lessons for an absolute beginner, sharing a reusable lesson definition and controller.
+- Current scope: six interactive lessons for an absolute beginner, sharing a reusable lesson definition and controller.
 - Chess legality and the lesson solution must be checked by application logic, not inferred from generated text.
 - Save lesson completion/progress locally in the browser. No sign-in, API, database, multiplayer, or Stockfish requirement for this slice.
 - First lesson: introduce how the knight moves from the initial position and invite the learner to play b1–c3.
 - Second lesson: introduce the rook on a simplified board and practice a1–a4. Learners can switch lessons, continue after completing one, and keep independent local progress.
+- Additional lessons cover the bishop (c1–f4), queen (d1–g4), king (e1–f2), and pawn (e2–e4). They introduce basic movement with simplified positions. Special moves remain future work.
+- Review mode provides six single-move captures in new positions, one per piece. Explanations are withheld until success and hints are optional. Separate local review records track attempts, hint consultations and unassisted first-attempt success; replay does not overwrite the first result. Review results do not imply a rating or definitive mastery.
 - Keep the app usable with touch and mouse, and provide clear text feedback and accessible controls.
 - Product name, visual identity, and deployment target are undecided; do not present a working label as an approved brand.
 
