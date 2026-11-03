@@ -2,7 +2,7 @@ import { Button } from '../../../components/ui/button'
 import { ProgressBar } from '../../../components/ui/progress-bar'
 import { lessons } from '../../../content/lessons'
 import { reviewExercises } from '../../../content/review-exercises'
-import type { LessonDefinition } from '../../../content/lesson-definition'
+import { tactics } from '../../../content/tactics'
 import { recommendActivity, summarizeProgress, type AcademyProgress, type ActivityTarget } from '../../../domain/academy-progress'
 
 function count(value: number, singular: string, plural: string) {
@@ -19,13 +19,14 @@ type ProgressDashboardProps = {
 export function ProgressDashboard({ progress, storageUnavailable, onOpen, onBack }: ProgressDashboardProps) {
   const lessonSummary = summarizeProgress(lessons, progress)
   const reviewSummary = summarizeProgress(reviewExercises, progress)
-  const recommendation = recommendActivity(lessons, reviewExercises, progress)
+  const tacticSummary = summarizeProgress(tactics, progress)
+  const recommendation = recommendActivity(lessons, reviewExercises, progress, tactics)
 
   return (
     <div className="mx-auto max-w-[1240px]">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 tabIndex={-1} className="text-[clamp(28px,3vw,38px)] font-bold leading-tight tracking-[-.035em] outline-none">Mi avance</h1>
+          <h1 data-progress-heading tabIndex={-1} className="text-[clamp(28px,3vw,38px)] font-bold leading-tight tracking-[-.035em] outline-none">Mi avance</h1>
           <p className="mt-2 max-w-[65ch] text-sm leading-relaxed text-muted">Tus lecciones y repasos en este navegador. No se envían datos a un servidor.</p>
         </div>
         <Button variant="ghost" onClick={onBack}>Volver a la actividad</Button>
@@ -48,7 +49,7 @@ export function ProgressDashboard({ progress, storageUnavailable, onOpen, onBack
         </section>
       )}
 
-      <section aria-label="Resumen de actividades" className="grid grid-cols-2 gap-x-8 gap-y-6 border-b border-line pb-6 max-mobile:grid-cols-1">
+      <section aria-label="Resumen de actividades" className="grid grid-cols-3 gap-x-8 gap-y-6 border-b border-line pb-6 max-tablet:grid-cols-1">
         <div>
           <h2 className="text-lg font-bold">Lecciones completadas <span className="ml-2 whitespace-nowrap text-base tabular-nums text-muted">{lessonSummary.completed} / {lessonSummary.total}</span></h2>
           <ProgressBar label="Lecciones completadas en Mi avance" value={lessonSummary.completed / lessonSummary.total * 100} className="mt-3" />
@@ -61,16 +62,24 @@ export function ProgressDashboard({ progress, storageUnavailable, onOpen, onBack
           <p className="mt-2 text-sm text-muted">{reviewSummary.firstTry} de {reviewSummary.total} al primer intento sin pistas.</p>
           {reviewSummary.unknownFirstResult > 0 && <p className="mt-2 text-sm text-muted">{reviewSummary.unknownFirstResult} {reviewSummary.unknownFirstResult === 1 ? 'repaso completado' : 'repasos completados'} sin dato del primer intento.</p>}
         </div>
+        <div>
+          <h2 className="text-lg font-bold">Tácticas resueltas <span className="ml-2 whitespace-nowrap text-base tabular-nums text-muted">{tacticSummary.completed} / {tacticSummary.total}</span></h2>
+          <ProgressBar label="Tácticas resueltas en Mi avance" value={tacticSummary.completed / tacticSummary.total * 100} className="mt-3" />
+          <p className="mt-3 text-sm tabular-nums text-muted">{count(tacticSummary.total - tacticSummary.completed, 'pendiente', 'pendientes')} · {count(tacticSummary.attempts, 'intento', 'intentos')} · {count(tacticSummary.hints, 'pista', 'pistas')}</p>
+          <p className="mt-2 text-sm text-muted">{tacticSummary.firstTry} de {tacticSummary.total} al primer intento sin pistas.</p>
+        </div>
       </section>
 
       <nav aria-label="Listas de avance" className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm font-bold text-ink-soft">
         <a className="rounded-control py-2 underline underline-offset-4 hover:text-teal" href="#progress-lessons">Ver lecciones</a>
         <a className="rounded-control py-2 underline underline-offset-4 hover:text-teal" href="#progress-review">Ver repasos</a>
+        <a className="rounded-control py-2 underline underline-offset-4 hover:text-teal" href="#progress-tactics">Ver tácticas</a>
       </nav>
 
-      <div className="mt-8 grid grid-cols-2 items-start gap-8 max-mobile:grid-cols-1">
+      <div className="mt-8 grid grid-cols-3 items-start gap-8 max-tablet:grid-cols-1">
         <ActivityList title="Tus lecciones" mode="lessons" catalog={lessons} progress={progress} onOpen={onOpen} />
         <ActivityList title="Tus repasos" mode="review" catalog={reviewExercises} progress={progress} onOpen={onOpen} />
+        <ActivityList title="Tus tácticas" mode="tactics" catalog={tactics} progress={progress} onOpen={onOpen} />
       </div>
       <p className="mt-8 border-t border-line pt-4 text-xs leading-relaxed text-muted">Estos resultados describen esta práctica guiada, no tu ELO ni un dominio definitivo. Los intentos y las pistas se acumulan; repetir no reemplaza el primer resultado.</p>
     </div>
@@ -80,7 +89,7 @@ export function ProgressDashboard({ progress, storageUnavailable, onOpen, onBack
 function ActivityList({ title, mode, catalog, progress, onOpen }: {
   title: string
   mode: ActivityTarget['mode']
-  catalog: LessonDefinition[]
+  catalog: { id: string; title: string }[]
   progress: AcademyProgress
   onOpen: (target: ActivityTarget) => void
 }) {
@@ -102,6 +111,7 @@ function ActivityList({ title, mode, catalog, progress, onOpen }: {
                 {completed ? 'Completado' : started ? 'En práctica' : 'Pendiente'} · {count(record?.attempts ?? 0, 'intento', 'intentos')} · {count(record?.hintsUsed ?? 0, 'pista', 'pistas')}
               </p>
               {mode === 'review' && completed && <p className="mt-1 text-xs leading-relaxed text-muted">{record?.firstAttemptCorrect === true ? 'Primer intento sin pistas' : record?.firstAttemptCorrect === false ? 'Primer intento con ayuda o error' : 'Primer intento sin registrar'}</p>}
+              {mode === 'tactics' && completed && <p className="mt-1 text-xs leading-relaxed text-muted">{record?.firstAttemptCorrect === true ? 'Solución completa al primer intento' : record?.firstAttemptCorrect === false ? 'Solución tras otro intento o una pista' : 'Primer resultado sin registrar'}</p>}
             </li>
           )
         })}

@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { PrimeProvider } from '../../providers/prime-provider'
 import { lessons } from '../../content/lessons'
 import { reviewExercises } from '../../content/review-exercises'
+import { tactics } from '../../content/tactics'
 import { createInitialProgress, loadProgress, recordAttempt, recordHint, saveProgress } from '../../domain/lesson'
 import { Academy } from './academy'
 
@@ -73,6 +74,7 @@ describe('Mi avance', () => {
       const initial = createInitialProgress(review.id)
       saveProgress(recordAttempt(review.id === exercise.id ? recordHint(initial) : initial, 'correct'), localStorage)
     }
+    for (const tactic of tactics) saveProgress(recordAttempt(createInitialProgress(tactic.id), 'correct'), localStorage)
     const saved = loadProgress(localStorage, exercise.id)
     const { container } = renderAcademy()
     await user.click(screen.getByRole('button', { name: 'Mi avance' }))

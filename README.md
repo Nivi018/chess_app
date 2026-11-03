@@ -1,6 +1,6 @@
 # Academia de ajedrez — lecciones iniciales
 
-Aplicación web responsive para principiantes con trece lecciones y trece ejercicios de repaso. Enseña los movimientos de las seis piezas, tres formas de responder al jaque, un primer jaque mate y las jugadas especiales. Incluye un tablero interactivo, feedback, pistas y progreso guardado localmente por actividad.
+Aplicación web responsive para principiantes con trece lecciones, trece ejercicios de repaso y dos combinaciones tácticas de varias jugadas. Enseña los movimientos de las seis piezas, respuestas al jaque, jaque mate y jugadas especiales. Incluye un tablero interactivo, feedback, pistas y progreso guardado localmente por actividad.
 
 ## Empezar
 
@@ -27,7 +27,7 @@ npm run build
 - `App.tsx` solo compone la página. La vista y el estado de la lección están separados en `src/features/lesson`.
 - `react-chessboard` y `chess.js` gestionan la representación y las reglas del ajedrez, respectivamente.
 - El progreso se guarda en `localStorage`; no se crean cuentas ni se envían datos a un servidor.
-- No se necesita Stockfish para estas lecciones.
+- No se necesita Stockfish para las lecciones, los repasos ni las tácticas actuales.
 - El plan maestro dividido está en [`docs/plan-maestro/README.md`](docs/plan-maestro/README.md).
 
 ## Agregar una lección
@@ -66,8 +66,14 @@ Al volver a entrar al repaso se abre el primer ejercicio pendiente, o el primero
 
 ## Mi avance
 
-**Mi avance** abre un panel conjunto de las trece lecciones y los trece repasos. Muestra completitud por separado, pendientes, intentos y pistas por actividad, y el primer resultado de los repasos. Si un registro antiguo no incluye ese resultado, se indica que no está registrado en lugar de inferirlo.
+**Mi avance** abre un panel conjunto de las trece lecciones, los trece repasos y las dos tácticas. Muestra completitud por separado, pendientes, intentos y pistas por actividad, y los primeros resultados registrados. Si un registro antiguo no incluye ese resultado, se indica que no está registrado en lugar de inferirlo.
 
-El siguiente paso sigue una regla sencilla y visible: primera lección pendiente, después primer repaso pendiente y, cuando todo está completado, un repaso cuyo primer resultado tuvo ayuda o error. Si no hay ninguno, ofrece repetir el primer repaso. No estima dominio ni ELO, no programa repaso espaciado y no modifica el primer resultado al repetir; por eso la sugerencia histórica puede mantenerse tras practicarlo de nuevo.
+El siguiente paso sigue una regla sencilla y visible: primera lección pendiente, primer repaso pendiente, primera táctica pendiente y, cuando todo está completado, un repaso cuyo primer resultado tuvo ayuda o error. Si no hay ninguno, ofrece repetir el primer repaso. No estima dominio ni ELO, no programa repaso espaciado y no modifica el primer resultado al repetir; por eso la sugerencia histórica puede mantenerse tras practicarlo de nuevo.
 
 Desde el panel puedes abrir cualquier actividad o repetir una completada directamente desde su posición inicial. **Volver a la actividad** conserva el estado de la actividad abierta, incluidas las pistas visibles. Los resultados se actualizan durante la sesión. Si falla el guardado, se mantienen en memoria al navegar y el panel advierte que podrían perderse al recargar. No hay sincronización entre dispositivos ni actualización en directo entre pestañas.
+
+## Tácticas de varias jugadas
+
+Abre **Practicar tácticas** desde la navegación para resolver una horquilla de caballo y una combinación de ataque de dama que termina en mate. Cada línea tiene dos jugadas del estudiante y una respuesta rival preparada entre ellas. La respuesta es una variante editorial para practicar, no una jugada elegida por Stockfish ni una afirmación de que sea forzada. Solo se revela después de encontrar la jugada correcta.
+
+Las jugadas se validan con las reglas en la posición actual, no solo comparando coordenadas. Una alternativa legal no avanza la línea y explica por qué no resuelve el reto. Los intentos cuentan por respuesta incorrecta o por combinación completa; las pistas y el primer resultado de la línea se guardan con IDs propios. **Mi avance** muestra las tácticas por separado y las recomienda después de completar lecciones y repasos. Si abres ese panel a mitad de una línea, puedes volver a la misma posición durante la sesión; una recarga reinicia una línea incompleta.

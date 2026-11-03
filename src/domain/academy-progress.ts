@@ -2,7 +2,7 @@ import type { LessonDefinition } from '../content/lesson-definition'
 import type { LessonProgress } from './lesson'
 
 export type AcademyProgress = Record<string, LessonProgress>
-export type ActivityTarget = { mode: 'lessons' | 'review'; activityId: string; replay?: boolean }
+export type ActivityTarget = { mode: 'lessons' | 'review' | 'tactics'; activityId: string; replay?: boolean }
 type Activity = Pick<LessonDefinition, 'id' | 'title'>
 
 export function summarizeProgress(catalog: Activity[], progress: AcademyProgress) {
@@ -17,7 +17,7 @@ export function summarizeProgress(catalog: Activity[], progress: AcademyProgress
   }
 }
 
-export function recommendActivity(lessons: Activity[], reviews: Activity[], progress: AcademyProgress): {
+export function recommendActivity(lessons: Activity[], reviews: Activity[], progress: AcademyProgress, tactics: Activity[] = []): {
   target: ActivityTarget
   title: string
   reason: string
@@ -31,6 +31,11 @@ export function recommendActivity(lessons: Activity[], reviews: Activity[], prog
   if (review) return {
     target: { mode: 'review', activityId: review.id }, title: review.title,
     reason: 'Ya completaste las lecciones. Practica ahora el primer repaso pendiente.',
+  }
+  const tactic = tactics.find((activity) => !progress[activity.id]?.completed)
+  if (tactic) return {
+    target: { mode: 'tactics', activityId: tactic.id }, title: tactic.title,
+    reason: 'Completaste las lecciones y los repasos. Prueba ahora la primera táctica de varias jugadas.',
   }
   const reinforce = reviews.find((activity) => progress[activity.id]?.firstAttemptCorrect === false)
   if (reinforce) return {

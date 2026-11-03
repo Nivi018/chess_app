@@ -6,11 +6,13 @@ import { ProgressDashboard } from './components/progress-dashboard'
 import { createInitialProgress, loadProgress, type LessonProgress } from '../../domain/lesson'
 import type { AcademyProgress, ActivityTarget } from '../../domain/academy-progress'
 import type { StorageState } from '../lesson/hooks/use-lesson'
+import { tactics } from '../../content/tactics'
+import { TacticsPage } from './components/tactics-page'
 
 function readAcademyProgress() {
   const progress: AcademyProgress = {}
   let storageUnavailable = false
-  for (const activity of [...lessons, ...reviewExercises]) {
+  for (const activity of [...lessons, ...reviewExercises, ...tactics]) {
     try {
       progress[activity.id] = loadProgress(window.localStorage, activity.id)
     } catch {
@@ -24,14 +26,15 @@ function readAcademyProgress() {
 }
 
 export function Academy() {
-  const [reviewMode, setReviewMode] = useState(false)
+  const [mode, setMode] = useState<'lessons' | 'review' | 'tactics'>('lessons')
   const [session, setSession] = useState(readAcademyProgress)
   const [showProgress, setShowProgress] = useState(false)
   const [launch, setLaunch] = useState<{ target?: ActivityTarget; version: number }>({ version: 0 })
   const storageUnavailable = session.readUnavailable || session.unsavedIds.length > 0
+  const reviewMode = mode === 'review'
 
   function openActivity(target: ActivityTarget) {
-    setReviewMode(target.mode === 'review')
+    setMode(target.mode)
     setLaunch((current) => ({ target, version: current.version + 1 }))
     setShowProgress(false)
   }
@@ -46,7 +49,19 @@ export function Academy() {
     }))
   }
 
-  return (
+  return mode === 'tactics' ? (
+    <TacticsPage
+      key={`tactics:${launch.version}`}
+      progress={session.progress}
+      storageUnavailable={storageUnavailable}
+      initialActivityId={launch.target?.mode === 'tactics' ? launch.target.activityId : undefined}
+      initialReplay={launch.target?.mode === 'tactics' && launch.target.replay}
+      onProgressChange={recordProgress}
+      onOpenActivity={openActivity}
+      onShowLessons={() => { setMode('lessons'); setLaunch((current) => ({ version: current.version + 1 })) }}
+      onShowReviews={() => { setMode('review'); setLaunch((current) => ({ version: current.version + 1 })) }}
+    />
+  ) : (
     <LessonPage
       key={`${reviewMode ? 'review' : 'lessons'}:${launch.version}`}
       catalog={reviewMode ? reviewExercises : lessons}
@@ -57,9 +72,14 @@ export function Academy() {
       storageUnavailable={storageUnavailable}
       onProgressChange={recordProgress}
       onShowProgress={() => setShowProgress((current) => !current)}
+      onSwitchTactics={() => {
+        setMode('tactics')
+        setLaunch((current) => ({ version: current.version + 1 }))
+        setShowProgress(false)
+      }}
       progressContent={showProgress ? <ProgressDashboard progress={session.progress} storageUnavailable={storageUnavailable} onOpen={openActivity} onBack={() => setShowProgress(false)} /> : undefined}
       onSwitchMode={() => {
-        setReviewMode((current) => !current)
+        setMode((current) => current === 'review' ? 'lessons' : 'review')
         setLaunch((current) => ({ version: current.version + 1 }))
         setShowProgress(false)
       }}
