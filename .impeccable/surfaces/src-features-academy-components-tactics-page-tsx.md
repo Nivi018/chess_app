@@ -7,7 +7,7 @@ related_targets: ["src/features/academy/academy.tsx","src/features/academy/compo
 
 # Tácticas de varias jugadas — extension contract
 
-Mode: Operate. Extend the academy's existing local-first, responsive chess surface. The user chose a small guided multi-ply tactics module using the existing board and rules; first iteration is two curated lines.
+Mode: Operate. Extend the academy's existing local-first, responsive chess surface with six curated lines, per-step hints and explicit prepared-reply observation.
 
 ## Direction contract
 
@@ -19,6 +19,6 @@ STORY: Open a tactic, reason about the current position, try a legal move, see t
 
 FIRST VIEWPORT: Keep the academy shell and rail; main heading/theme above a two-column board and coach panel. The board carries the current position and move selector; coach holds the concealed explanation, hint, response state and replay. Stack board before coach on mobile. Mi avance adds separate tactic progress.
 
-FORM: Local extension of the established academy; no visual-world workshop. Two puzzles: knight fork winning a rook and a prepared queen attack ending in mate. Save attempts, hints and first complete line using independent local IDs.
+FORM: Local extension of the established academy; no visual-world workshop. Six puzzles: fork, queen mate, pin, ladder mate, discovered attack and skewer. After a correct learner move, lock board/selector/hints and focus Ver respuesta rival. After showing the reply, focus the board instruction and offer the new step's hint. Save attempts, hints and first complete line using independent local IDs; preserve original records. Lazy-load lesson, tactics and progress surfaces with loading/error recovery.
 
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance

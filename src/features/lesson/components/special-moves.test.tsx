@@ -83,10 +83,10 @@ describe('special move experience', () => {
   it('preserves a pending promotion when visiting Mi avance and returning', async () => {
     const user = userEvent.setup()
     const { container } = render(<PrimeProvider><Academy /></PrimeProvider>)
-    await user.click(screen.getByRole('button', { name: /12\. Promociona un peón/ }))
+    await user.click(await screen.findByRole('button', { name: /12\. Promociona un peón/ }))
     clickMove(container, 'a7', 'a8')
     await user.click(screen.getByRole('button', { name: 'Mi avance' }))
-    await user.click(screen.getByRole('button', { name: 'Volver a la actividad' }))
+    await user.click(await screen.findByRole('button', { name: 'Volver a la actividad' }))
     expect(screen.getByRole('group', { name: 'Elige la pieza de promoción' })).toBeTruthy()
     expect(loadProgress(localStorage, specialMoveLessons[1].id).attempts).toBe(0)
     await user.click(screen.getByRole('button', { name: 'Dama' }))
@@ -124,7 +124,7 @@ describe('special move experience', () => {
       return progress
     })
     render(<PrimeProvider><Academy /></PrimeProvider>)
-    expect(screen.getByRole('heading', { name: specialMoveLessons[0].title })).toBeTruthy()
+    expect(await screen.findByRole('heading', { name: specialMoveLessons[0].title })).toBeTruthy()
     expect(Number(screen.getByRole('progressbar').getAttribute('aria-valuenow'))).toBeCloseTo(1000 / lessons.length)
     await user.click(screen.getByRole('button', { name: 'Repasar movimientos' }))
     expect(screen.getByRole('heading', { name: reviewSpecialExercises[0].title })).toBeTruthy()

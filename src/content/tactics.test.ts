@@ -18,6 +18,12 @@ describe('curated multi-move tactics', () => {
       expect(validateTactic(tactic)).toBe(true)
       expect(tactic.steps.filter((step) => step.actor === 'learner')).toHaveLength(2)
       expect(replayTactic(tactic).moves).toHaveLength(tactic.steps.length)
+      for (const step of tactic.steps) {
+        if (step.actor === 'learner') {
+          expect(step.instruction.length).toBeGreaterThan(0)
+          expect(step.hint.length).toBeGreaterThan(0)
+        } else expect(step.explanation.length).toBeGreaterThan(0)
+      }
     })
   }
 
@@ -38,5 +44,31 @@ describe('curated multi-move tactics', () => {
     game.move({ from: 'g8', to: 'f6' })
     game.move({ from: 'h5', to: 'f7' })
     expect(game.isCheckmate()).toBe(true)
+  })
+
+  it('pins the knight to its king and captures it on a protected square', () => {
+    const { game } = replayTactic(tactics[2], 1)
+    expect(game.moves({ square: 'd5' })).toEqual([])
+    const final = replayTactic(tactics[2]).game
+    expect(final.get('d5')).toEqual({ type: 'b', color: 'w' })
+    expect(final.moves({ square: 'e6' })).not.toContain('Kxd5')
+  })
+
+  it('coordinates the two rooks for ladder mate', () => {
+    expect(replayTactic(tactics[3], 1).game.isCheck()).toBe(false)
+    expect(replayTactic(tactics[3]).game.isCheckmate()).toBe(true)
+  })
+
+  it('uncovers a rook check while the bishop attacks the queen', () => {
+    const { game } = replayTactic(tactics[4], 1)
+    expect(game.isCheck()).toBe(true)
+    expect(game.attackers('e8', 'w')).toContain('e1')
+    expect(game.attackers('a6', 'w')).toContain('b5')
+    expect(replayTactic(tactics[4]).moves.at(-1)).toBe('Bxa6')
+  })
+
+  it('skewers the king and captures the exposed rook', () => {
+    expect(replayTactic(tactics[5], 1).game.isCheck()).toBe(true)
+    expect(replayTactic(tactics[5]).moves.at(-1)).toBe('Bxf8')
   })
 })

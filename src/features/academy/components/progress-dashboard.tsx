@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { Button } from '../../../components/ui/button'
 import { ProgressBar } from '../../../components/ui/progress-bar'
 import { lessons } from '../../../content/lessons'
@@ -9,7 +10,7 @@ function count(value: number, singular: string, plural: string) {
   return `${value} ${value === 1 ? singular : plural}`
 }
 
-type ProgressDashboardProps = {
+export type ProgressDashboardProps = {
   progress: AcademyProgress
   storageUnavailable: boolean
   onOpen: (target: ActivityTarget) => void
@@ -17,6 +18,8 @@ type ProgressDashboardProps = {
 }
 
 export function ProgressDashboard({ progress, storageUnavailable, onOpen, onBack }: ProgressDashboardProps) {
+  const headingRef = useRef<HTMLHeadingElement>(null)
+  useEffect(() => { headingRef.current?.focus({ preventScroll: true }) }, [])
   const lessonSummary = summarizeProgress(lessons, progress)
   const reviewSummary = summarizeProgress(reviewExercises, progress)
   const tacticSummary = summarizeProgress(tactics, progress)
@@ -26,7 +29,7 @@ export function ProgressDashboard({ progress, storageUnavailable, onOpen, onBack
     <div className="mx-auto max-w-[1240px]">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 data-progress-heading tabIndex={-1} className="text-[clamp(28px,3vw,38px)] font-bold leading-tight tracking-[-.035em] outline-none">Mi avance</h1>
+          <h1 ref={headingRef} data-progress-heading tabIndex={-1} className="text-[clamp(28px,3vw,38px)] font-bold leading-tight tracking-[-.035em] outline-none">Mi avance</h1>
           <p className="mt-2 max-w-[65ch] text-sm leading-relaxed text-muted">Tus lecciones y repasos en este navegador. No se envían datos a un servidor.</p>
         </div>
         <Button variant="ghost" onClick={onBack}>Volver a la actividad</Button>

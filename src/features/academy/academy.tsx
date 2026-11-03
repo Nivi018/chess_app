@@ -1,13 +1,15 @@
-import { useState } from 'react'
+import { lazy, useState } from 'react'
 import { lessons } from '../../content/lessons'
 import { reviewExercises } from '../../content/review-exercises'
-import { LessonPage } from '../lesson/components/lesson-page'
-import { ProgressDashboard } from './components/progress-dashboard'
+import { LazyProgressDashboard } from './components/lazy-progress-dashboard'
 import { createInitialProgress, loadProgress, type LessonProgress } from '../../domain/lesson'
 import type { AcademyProgress, ActivityTarget } from '../../domain/academy-progress'
 import type { StorageState } from '../lesson/hooks/use-lesson'
 import { tactics } from '../../content/tactics'
-import { TacticsPage } from './components/tactics-page'
+import { FeatureBoundary } from '../../components/ui/feature-boundary'
+
+const TacticsPage = lazy(() => import('./components/tactics-page').then((module) => ({ default: module.TacticsPage })))
+const LessonPage = lazy(() => import('../lesson/components/lesson-page').then((module) => ({ default: module.LessonPage })))
 
 function readAcademyProgress() {
   const progress: AcademyProgress = {}
@@ -50,6 +52,7 @@ export function Academy() {
   }
 
   return mode === 'tactics' ? (
+    <FeatureBoundary key={`tactics:${launch.version}`} label="las tácticas" onBack={() => { setMode('lessons'); setLaunch((current) => ({ version: current.version + 1 })) }}>
     <TacticsPage
       key={`tactics:${launch.version}`}
       progress={session.progress}
@@ -61,7 +64,9 @@ export function Academy() {
       onShowLessons={() => { setMode('lessons'); setLaunch((current) => ({ version: current.version + 1 })) }}
       onShowReviews={() => { setMode('review'); setLaunch((current) => ({ version: current.version + 1 })) }}
     />
+    </FeatureBoundary>
   ) : (
+    <FeatureBoundary key={`course:${launch.version}`} label={reviewMode ? 'los repasos' : 'las lecciones'}>
     <LessonPage
       key={`${reviewMode ? 'review' : 'lessons'}:${launch.version}`}
       catalog={reviewMode ? reviewExercises : lessons}
@@ -77,12 +82,13 @@ export function Academy() {
         setLaunch((current) => ({ version: current.version + 1 }))
         setShowProgress(false)
       }}
-      progressContent={showProgress ? <ProgressDashboard progress={session.progress} storageUnavailable={storageUnavailable} onOpen={openActivity} onBack={() => setShowProgress(false)} /> : undefined}
+      progressContent={showProgress ? <LazyProgressDashboard progress={session.progress} storageUnavailable={storageUnavailable} onOpen={openActivity} onBack={() => setShowProgress(false)} /> : undefined}
       onSwitchMode={() => {
         setMode((current) => current === 'review' ? 'lessons' : 'review')
         setLaunch((current) => ({ version: current.version + 1 }))
         setShowProgress(false)
       }}
     />
+    </FeatureBoundary>
   )
 }

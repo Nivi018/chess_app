@@ -8,8 +8,10 @@ import { tactics } from '../../content/tactics'
 import { createInitialProgress, loadProgress, recordAttempt, recordHint, saveProgress } from '../../domain/lesson'
 import { Academy } from './academy'
 
-function renderAcademy() {
-  return render(<PrimeProvider><Academy /></PrimeProvider>)
+async function renderAcademy() {
+  const view = render(<PrimeProvider><Academy /></PrimeProvider>)
+  await screen.findByRole('button', { name: 'Mi avance' })
+  return view
 }
 
 function completeLessons() {
@@ -26,8 +28,9 @@ describe('Mi avance', () => {
 
   it('shows an honest empty state and opens the recommended first lesson', async () => {
     const user = userEvent.setup()
-    renderAcademy()
+    await renderAcademy()
     await user.click(screen.getByRole('button', { name: 'Mi avance' }))
+    await screen.findByRole('heading', { name: 'Mi avance' })
     expect(screen.getByRole('heading', { name: 'Mi avance' })).toBe(document.activeElement)
     expect(screen.getByRole('button', { name: 'Mi avance' }).getAttribute('aria-current')).toBe('page')
     expect(screen.getAllByText(`0 / ${lessons.length}`)).toHaveLength(3)
@@ -39,7 +42,7 @@ describe('Mi avance', () => {
 
   it('updates completion live and returns to the exact activity with its hint state', async () => {
     const user = userEvent.setup()
-    const { container } = renderAcademy()
+    const { container } = await renderAcademy()
     fireEvent.click(container.querySelector('[data-square="b1"]')!)
     fireEvent.click(container.querySelector('[data-square="c3"]')!)
     await user.click(screen.getByRole('button', { name: 'Mi avance' }))
@@ -57,7 +60,7 @@ describe('Mi avance', () => {
   it('recommends review after lessons and does not count lesson records as review results', async () => {
     const user = userEvent.setup()
     completeLessons()
-    renderAcademy()
+    await renderAcademy()
     await user.click(screen.getByRole('button', { name: 'Mi avance' }))
     expect(screen.getByRole('progressbar', { name: 'Lecciones completadas en Mi avance' }).getAttribute('aria-valuenow')).toBe('100')
     expect(screen.getByRole('progressbar', { name: 'Repasos resueltos en Mi avance' }).getAttribute('aria-valuenow')).toBe('0')
@@ -76,7 +79,7 @@ describe('Mi avance', () => {
     }
     for (const tactic of tactics) saveProgress(recordAttempt(createInitialProgress(tactic.id), 'correct'), localStorage)
     const saved = loadProgress(localStorage, exercise.id)
-    const { container } = renderAcademy()
+    const { container } = await renderAcademy()
     await user.click(screen.getByRole('button', { name: 'Mi avance' }))
     expect(screen.getByText(/En tu primer resultado necesitaste/)).toBeTruthy()
     await user.click(screen.getByRole('button', { name: 'Volver a practicar' }))
@@ -93,7 +96,7 @@ describe('Mi avance', () => {
     const exercise = reviewExercises[0]
     saveProgress({ lessonId: exercise.id, completed: true, attempts: 1, completedAt: '2026-10-30T12:00:00Z' }, localStorage)
     localStorage.setItem(`chess-academy:${reviewExercises[1].id}:v1`, '{invalid')
-    renderAcademy()
+    await renderAcademy()
     await user.click(screen.getByRole('button', { name: 'Mi avance' }))
     expect(screen.getByText('1 repaso completado sin dato del primer intento.')).toBeTruthy()
     expect(screen.getByText('Primer intento sin registrar')).toBeTruthy()
@@ -103,7 +106,7 @@ describe('Mi avance', () => {
   it('keeps session results across modes when writing storage fails and warns in Mi avance', async () => {
     const user = userEvent.setup()
     vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('Quota exceeded') })
-    const { container } = renderAcademy()
+    const { container } = await renderAcademy()
     fireEvent.click(container.querySelector('[data-square="b1"]')!)
     fireEvent.click(container.querySelector('[data-square="c3"]')!)
     await user.click(screen.getByRole('button', { name: 'Repasar movimientos' }))
@@ -120,7 +123,7 @@ describe('Mi avance', () => {
   it('handles a browser that blocks all storage access', async () => {
     const user = userEvent.setup()
     vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new Error('Storage blocked') })
-    renderAcademy()
+    await renderAcademy()
     await user.click(screen.getByRole('button', { name: 'Mi avance' }))
     expect(screen.getByText(/al recargar podrías perder/)).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Continuar aprendiendo' })).toBeTruthy()
@@ -129,7 +132,7 @@ describe('Mi avance', () => {
   it('clears the unsaved warning only after the affected activity is actually saved', async () => {
     const user = userEvent.setup()
     vi.spyOn(Storage.prototype, 'setItem').mockImplementationOnce(() => { throw new Error('Quota exceeded') })
-    const { container } = renderAcademy()
+    const { container } = await renderAcademy()
     await user.click(screen.getByRole('button', { name: 'Necesito una pista' }))
     await user.click(screen.getByRole('button', { name: 'Repasar movimientos' }))
     await user.click(screen.getByRole('button', { name: 'Necesito una pista' }))

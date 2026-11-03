@@ -1,6 +1,6 @@
 # Academia de ajedrez — lecciones iniciales
 
-Aplicación web responsive para principiantes con trece lecciones, trece ejercicios de repaso y dos combinaciones tácticas de varias jugadas. Enseña los movimientos de las seis piezas, respuestas al jaque, jaque mate y jugadas especiales. Incluye un tablero interactivo, feedback, pistas y progreso guardado localmente por actividad.
+Aplicación web responsive para principiantes con trece lecciones, trece ejercicios de repaso y seis combinaciones tácticas de varias jugadas. Enseña los movimientos de las seis piezas, respuestas al jaque, jaque mate y jugadas especiales. Incluye un tablero interactivo, feedback, pistas y progreso guardado localmente por actividad.
 
 ## Empezar
 
@@ -66,7 +66,7 @@ Al volver a entrar al repaso se abre el primer ejercicio pendiente, o el primero
 
 ## Mi avance
 
-**Mi avance** abre un panel conjunto de las trece lecciones, los trece repasos y las dos tácticas. Muestra completitud por separado, pendientes, intentos y pistas por actividad, y los primeros resultados registrados. Si un registro antiguo no incluye ese resultado, se indica que no está registrado en lugar de inferirlo.
+**Mi avance** abre un panel conjunto de las trece lecciones, los trece repasos y las seis tácticas. Muestra completitud por separado, pendientes, intentos y pistas por actividad, y los primeros resultados registrados. Si un registro antiguo no incluye ese resultado, se indica que no está registrado en lugar de inferirlo.
 
 El siguiente paso sigue una regla sencilla y visible: primera lección pendiente, primer repaso pendiente, primera táctica pendiente y, cuando todo está completado, un repaso cuyo primer resultado tuvo ayuda o error. Si no hay ninguno, ofrece repetir el primer repaso. No estima dominio ni ELO, no programa repaso espaciado y no modifica el primer resultado al repetir; por eso la sugerencia histórica puede mantenerse tras practicarlo de nuevo.
 
@@ -74,6 +74,12 @@ Desde el panel puedes abrir cualquier actividad o repetir una completada directa
 
 ## Tácticas de varias jugadas
 
-Abre **Practicar tácticas** desde la navegación para resolver una horquilla de caballo y una combinación de ataque de dama que termina en mate. Cada línea tiene dos jugadas del estudiante y una respuesta rival preparada entre ellas. La respuesta es una variante editorial para practicar, no una jugada elegida por Stockfish ni una afirmación de que sea forzada. Solo se revela después de encontrar la jugada correcta.
+Abre **Practicar tácticas** para resolver una horquilla de caballo, un ataque de dama con mate, una clavada, un mate en escalera, un ataque descubierto y una enfilada. Cada línea tiene dos jugadas del estudiante y una respuesta rival preparada entre ellas. Tras acertar, la posición espera hasta pulsar **Ver respuesta rival**; mientras tanto se bloquean tablero, selector y pistas. La respuesta es editorial, no elegida por Stockfish ni necesariamente forzada. Cada paso del estudiante tiene su propia instrucción y pista; la pista se cierra al avanzar.
 
-Las jugadas se validan con las reglas en la posición actual, no solo comparando coordenadas. Una alternativa legal no avanza la línea y explica por qué no resuelve el reto. Los intentos cuentan por respuesta incorrecta o por combinación completa; las pistas y el primer resultado de la línea se guardan con IDs propios. **Mi avance** muestra las tácticas por separado y las recomienda después de completar lecciones y repasos. Si abres ese panel a mitad de una línea, puedes volver a la misma posición durante la sesión; una recarga reinicia una línea incompleta.
+Las jugadas se validan con las reglas en la posición actual, no solo comparando coordenadas. Una alternativa legal no avanza la variante y no se califica como necesariamente mala en una partida. Los intentos cuentan por respuesta incorrecta o por combinación completa; observar la respuesta rival no cuenta. Las pistas y el primer resultado se guardan con IDs propios. Los dos IDs originales y todas las claves anteriores se conservan: dos tácticas resueltas pasan a representar 2 de 6. **Mi avance** recomienda tácticas después de lecciones y repasos. Volver del panel conserva la posición durante la sesión; recargar reinicia una línea incompleta sin perder las métricas guardadas.
+
+## Carga por módulos
+
+Lecciones, tácticas y **Mi avance** se cargan con `React.lazy`, con mensajes de espera y recuperación ante errores. El panel de avance no se descarga hasta abrirlo. La compilación genera `dist/.vite/manifest.json` para comprobar las dependencias.
+
+Medición de esta iteración (JavaScript minificado, KB decimales): entrada ≈412 frente a ≈596 anteriores; primera lección completa, incluidas dependencias compartidas, ≈584. La reducción del archivo de entrada no equivale a una reducción del 31 % de toda la primera visita. Tácticas ≈16 y avance ≈8 se difieren hasta necesitarlos; no se aumentó el límite de avisos de Vite.

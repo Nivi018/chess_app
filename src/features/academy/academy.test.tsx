@@ -6,8 +6,10 @@ import { Academy } from './academy'
 import { reviewExercises } from '../../content/review-exercises'
 import { createInitialProgress, loadProgress, recordAttempt, saveProgress } from '../../domain/lesson'
 
-function renderAcademy() {
-  return render(<PrimeProvider><Academy /></PrimeProvider>)
+async function renderAcademy() {
+  const view = render(<PrimeProvider><Academy /></PrimeProvider>)
+  await screen.findByRole('button', { name: 'Mi avance' })
+  return view
 }
 
 describe('review experience', () => {
@@ -22,7 +24,7 @@ describe('review experience', () => {
     const user = userEvent.setup()
     const original = recordAttempt(createInitialProgress(), 'correct')
     saveProgress(original, localStorage)
-    const { container, unmount } = renderAcademy()
+    const { container, unmount } = await renderAcademy()
     await user.click(screen.getByRole('button', { name: 'Repasar movimientos' }))
     const exercise = reviewExercises[0]
     expect(screen.queryByText(exercise.explanation)).toBeNull()
@@ -34,7 +36,7 @@ describe('review experience', () => {
     expect(loadProgress(localStorage, exercise.id).firstAttemptCorrect).toBe(false)
     expect(loadProgress(localStorage)).toEqual(original)
     unmount()
-    renderAcademy()
+    await renderAcademy()
     await user.click(screen.getByRole('button', { name: 'Repasar movimientos' }))
     expect(screen.getByRole('heading', { name: reviewExercises[1].title })).toBeTruthy()
     const results = screen.getByRole('region', { name: 'Tu repaso' })
@@ -43,7 +45,7 @@ describe('review experience', () => {
 
   it('completes all reviews, preserves first results during replay and returns to lessons', async () => {
     const user = userEvent.setup()
-    const { container } = renderAcademy()
+    const { container } = await renderAcademy()
     await user.click(screen.getByRole('button', { name: 'Repasar movimientos' }))
     for (const [index, exercise] of reviewExercises.entries()) {
       fireEvent.click(container.querySelector(`[data-square="${exercise.targetFrom}"]`)!)
@@ -66,7 +68,7 @@ describe('review experience', () => {
 
   it('supports the destination selector and gives feedback on a legal alternative', async () => {
     const user = userEvent.setup()
-    const { container } = renderAcademy()
+    const { container } = await renderAcademy()
     await user.click(screen.getByRole('button', { name: 'Repasar movimientos' }))
     fireEvent.click(container.querySelector('[data-square="d4"]')!)
     fireEvent.click(container.querySelector('[data-square="b5"]')!)
@@ -91,7 +93,7 @@ describe('review experience', () => {
     })
     const lesson = recordAttempt(createInitialProgress(), 'correct')
     saveProgress(lesson, localStorage)
-    const { container, unmount } = renderAcademy()
+    const { container, unmount } = await renderAcademy()
     await user.click(screen.getByRole('button', { name: 'Repasar movimientos' }))
     const exercise = reviewExercises[6]
     expect(screen.getByRole('heading', { name: exercise.title })).toBeTruthy()
@@ -111,7 +113,7 @@ describe('review experience', () => {
     for (const progress of originalReviews) expect(loadProgress(localStorage, progress.lessonId)).toEqual(progress)
     expect(loadProgress(localStorage)).toEqual(lesson)
     unmount()
-    renderAcademy()
+    await renderAcademy()
     await user.click(screen.getByRole('button', { name: 'Repasar movimientos' }))
     expect(screen.getByRole('heading', { name: reviewExercises[7].title })).toBeTruthy()
     expect(Number(screen.getByRole('progressbar').getAttribute('aria-valuenow'))).toBeCloseTo(700 / reviewExercises.length)
