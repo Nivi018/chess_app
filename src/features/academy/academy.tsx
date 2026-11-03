@@ -10,6 +10,7 @@ import { FeatureBoundary } from '../../components/ui/feature-boundary'
 
 const TacticsPage = lazy(() => import('./components/tactics-page').then((module) => ({ default: module.TacticsPage })))
 const LessonPage = lazy(() => import('../lesson/components/lesson-page').then((module) => ({ default: module.LessonPage })))
+const ComputerPage = lazy(() => import('../play/components/computer-page').then((module) => ({ default: module.ComputerPage })))
 
 function readAcademyProgress() {
   const progress: AcademyProgress = {}
@@ -28,7 +29,7 @@ function readAcademyProgress() {
 }
 
 export function Academy() {
-  const [mode, setMode] = useState<'lessons' | 'review' | 'tactics'>('lessons')
+  const [mode, setMode] = useState<'lessons' | 'review' | 'tactics' | 'computer'>('lessons')
   const [session, setSession] = useState(readAcademyProgress)
   const [showProgress, setShowProgress] = useState(false)
   const [launch, setLaunch] = useState<{ target?: ActivityTarget; version: number }>({ version: 0 })
@@ -51,7 +52,18 @@ export function Academy() {
     }))
   }
 
-  return mode === 'tactics' ? (
+  function switchSection(next: typeof mode) {
+    setMode(next)
+    setShowProgress(false)
+    setLaunch((current) => ({ version: current.version + 1 }))
+  }
+
+  return mode === 'computer' ? (
+    <FeatureBoundary key={`computer:${launch.version}`} label="la partida contra el ordenador" onBack={() => switchSection('lessons')}>
+      <ComputerPage progress={session.progress} storageUnavailable={storageUnavailable} onOpenActivity={openActivity}
+        onShowLessons={() => switchSection('lessons')} onShowReviews={() => switchSection('review')} onShowTactics={() => switchSection('tactics')} />
+    </FeatureBoundary>
+  ) : mode === 'tactics' ? (
     <FeatureBoundary key={`tactics:${launch.version}`} label="las tácticas" onBack={() => { setMode('lessons'); setLaunch((current) => ({ version: current.version + 1 })) }}>
     <TacticsPage
       key={`tactics:${launch.version}`}
@@ -63,6 +75,7 @@ export function Academy() {
       onOpenActivity={openActivity}
       onShowLessons={() => { setMode('lessons'); setLaunch((current) => ({ version: current.version + 1 })) }}
       onShowReviews={() => { setMode('review'); setLaunch((current) => ({ version: current.version + 1 })) }}
+      onShowComputer={() => switchSection('computer')}
     />
     </FeatureBoundary>
   ) : (
@@ -77,6 +90,7 @@ export function Academy() {
       storageUnavailable={storageUnavailable}
       onProgressChange={recordProgress}
       onShowProgress={() => setShowProgress((current) => !current)}
+      onSwitchComputer={() => switchSection('computer')}
       onSwitchTactics={() => {
         setMode('tactics')
         setLaunch((current) => ({ version: current.version + 1 }))

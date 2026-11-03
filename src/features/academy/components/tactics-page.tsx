@@ -27,6 +27,7 @@ export type TacticsPageProps = {
   onOpenActivity: (target: ActivityTarget) => void
   onShowLessons: () => void
   onShowReviews: () => void
+  onShowComputer?: () => void
 }
 
 export function TacticsPage(props: TacticsPageProps) {
@@ -61,6 +62,7 @@ export function TacticsPage(props: TacticsPageProps) {
           tacticsMode
           onSwitchMode={props.onShowLessons}
           onSwitchReview={props.onShowReviews}
+          onSwitchComputer={props.onShowComputer}
           progressActive={showProgress}
           onSelect={(id) => { setActiveId(id); setShowProgress(false) }}
           progressRef={navRef}

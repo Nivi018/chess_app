@@ -19,9 +19,11 @@ type LessonNavigationProps = {
   tacticsMode?: boolean
   onSwitchTactics?: () => void
   onSwitchReview?: () => void
+  computerMode?: boolean
+  onSwitchComputer?: () => void
 }
 
-export function LessonNavigation({ completedIds, lessons, activeId, onSelect, progressRef, onLessonClick, onProgressClick, reviewMode = false, onSwitchMode, progressActive = false, tacticsMode = false, onSwitchTactics, onSwitchReview }: LessonNavigationProps) {
+export function LessonNavigation({ completedIds, lessons, activeId, onSelect, progressRef, onLessonClick, onProgressClick, reviewMode = false, onSwitchMode, progressActive = false, tacticsMode = false, onSwitchTactics, onSwitchReview, computerMode = false, onSwitchComputer }: LessonNavigationProps) {
   const completedCount = completedIds.length
   return (
     <aside
@@ -33,16 +35,16 @@ export function LessonNavigation({ completedIds, lessons, activeId, onSelect, pr
       </div>
       <Button variant={progressActive ? 'nav' : 'navActive'} aria-current={!progressActive ? 'page' : undefined} onClick={onLessonClick} className="max-mobile:min-h-[41px] max-mobile:justify-center max-mobile:px-2 max-mobile:text-xs">
         <BookOpenText className="size-[18px] shrink-0" aria-hidden="true" />
-        <span>{tacticsMode ? 'Mis tácticas' : reviewMode ? 'Mis ejercicios' : 'Mis lecciones'}</span>
+        <span>{computerMode ? 'Mi partida' : tacticsMode ? 'Mis tácticas' : reviewMode ? 'Mis ejercicios' : 'Mis lecciones'}</span>
       </Button>
 
       <Button variant={progressActive ? 'navActive' : 'nav'} aria-current={progressActive ? 'page' : undefined} onClick={onProgressClick} className="max-mobile:min-h-[41px] max-mobile:justify-center max-mobile:px-2 max-mobile:text-xs">
         <Route className="size-[18px] shrink-0" aria-hidden="true" />
         <span>Mi avance</span>
-        {completedCount === lessons.length && <Check className="ml-auto size-4 text-success-ink max-mobile:ml-0" aria-hidden="true" />}
+        {!computerMode && completedCount === lessons.length && <Check className="ml-auto size-4 text-success-ink max-mobile:ml-0" aria-hidden="true" />}
       </Button>
 
-      {tacticsMode ? (
+      {tacticsMode || computerMode ? (
         <>
           {onSwitchMode && <Button variant="nav" onClick={onSwitchMode} className="max-mobile:col-span-full max-mobile:justify-center max-mobile:text-xs"><RotateCcw size={18} aria-hidden="true" /><span>Volver a las lecciones</span></Button>}
           {onSwitchReview && <Button variant="nav" onClick={onSwitchReview} className="max-mobile:col-span-full max-mobile:justify-center max-mobile:text-xs"><RotateCcw size={18} aria-hidden="true" /><span>Repasar movimientos</span></Button>}
@@ -55,8 +57,9 @@ export function LessonNavigation({ completedIds, lessons, activeId, onSelect, pr
       )}
 
       {!tacticsMode && onSwitchTactics && <Button variant="nav" onClick={onSwitchTactics} className="max-mobile:col-span-full max-mobile:justify-center max-mobile:text-xs"><Route size={18} aria-hidden="true" /><span>Practicar tácticas</span></Button>}
+      {!computerMode && onSwitchComputer && <Button variant="nav" onClick={onSwitchComputer} className="max-mobile:col-span-full max-mobile:justify-center max-mobile:text-xs"><BookOpenText size={18} aria-hidden="true" /><span>Jugar contra el ordenador</span></Button>}
 
-      <div ref={progressRef} className={`mt-[37px] border-t border-[#c6d4cd] px-[9px] pt-[19px] max-mobile:col-span-full max-mobile:mx-[3px] max-mobile:mt-[5px] max-mobile:border-t max-mobile:pt-[10px] ${progressActive ? 'max-mobile:hidden' : ''}`}>
+      {!computerMode && <div ref={progressRef} className={`mt-[37px] border-t border-[#c6d4cd] px-[9px] pt-[19px] max-mobile:col-span-full max-mobile:mx-[3px] max-mobile:mt-[5px] max-mobile:border-t max-mobile:pt-[10px] ${progressActive ? 'max-mobile:hidden' : ''}`}>
         <div className="mb-[15px] text-sm font-bold max-mobile:hidden">Tu recorrido</div>
         <div className="flex justify-between gap-2 text-xs text-[#455e58] max-mobile:text-[11px]">
           <span>{tacticsMode ? 'Tácticas resueltas' : reviewMode ? 'Ejercicios resueltos' : 'Lecciones completadas'}</span>
@@ -66,7 +69,7 @@ export function LessonNavigation({ completedIds, lessons, activeId, onSelect, pr
         <p className="mt-[9px] text-xs text-[#4d6560] max-mobile:hidden">
           {completedCount ? 'Sigue practicando a tu ritmo.' : 'Una jugada a la vez.'}
         </p>
-      </div>
+      </div>}
 
       <nav aria-label={tacticsMode ? 'Elegir táctica' : reviewMode ? 'Elegir ejercicio' : 'Elegir lección'} className={`mt-4 grid gap-1 max-mobile:col-span-full ${progressActive ? 'hidden' : ''}`}>
         {lessons.map((lesson, index) => (

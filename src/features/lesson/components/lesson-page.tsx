@@ -24,6 +24,7 @@ type LessonPageProps = {
   reviewMode?: boolean
   onSwitchMode?: () => void
   onSwitchTactics?: () => void
+  onSwitchComputer?: () => void
   onShowProgress?: () => void
   progressContent?: ReactNode
   initialActivityId?: string
@@ -33,7 +34,7 @@ type LessonPageProps = {
   onProgressChange?: (progress: LessonProgress, storageState: StorageState) => void
 }
 
-export function LessonPage({ catalog = lessons, reviewMode = false, onSwitchMode, onSwitchTactics, onShowProgress, progressContent, initialActivityId, initialReplay = false, initialProgress, storageUnavailable = false, onProgressChange }: LessonPageProps) {
+export function LessonPage({ catalog = lessons, reviewMode = false, onSwitchMode, onSwitchTactics, onSwitchComputer, onShowProgress, progressContent, initialActivityId, initialReplay = false, initialProgress, storageUnavailable = false, onProgressChange }: LessonPageProps) {
   const [courseProgress, setCourseProgress] = useState(() => initialProgress
     ? Object.fromEntries(catalog.map((activity) => [activity.id, initialProgress[activity.id] ?? createInitialProgress(activity.id)]))
     : readCourseProgress(catalog))
@@ -49,6 +50,7 @@ export function LessonPage({ catalog = lessons, reviewMode = false, onSwitchMode
       reviewMode={reviewMode}
       onSwitchMode={onSwitchMode}
       onSwitchTactics={onSwitchTactics}
+      onSwitchComputer={onSwitchComputer}
       onShowProgress={onShowProgress}
       progressContent={progressContent}
       initialReplay={initialReplay && definition.id === initialActivityId}
@@ -67,12 +69,13 @@ export function LessonPage({ catalog = lessons, reviewMode = false, onSwitchMode
   )
 }
 
-function LessonSession({ definition, catalog, reviewMode, onSwitchMode, onSwitchTactics, onShowProgress, progressContent, initialReplay, focusOnMount, storageUnavailable, courseProgress, onSelect, onProgressChange }: {
+function LessonSession({ definition, catalog, reviewMode, onSwitchMode, onSwitchTactics, onSwitchComputer, onShowProgress, progressContent, initialReplay, focusOnMount, storageUnavailable, courseProgress, onSelect, onProgressChange }: {
   definition: LessonDefinition
   catalog: LessonDefinition[]
   reviewMode: boolean
   onSwitchMode?: () => void
   onSwitchTactics?: () => void
+  onSwitchComputer?: () => void
   onShowProgress?: () => void
   progressContent?: ReactNode
   initialReplay: boolean
@@ -113,6 +116,7 @@ function LessonSession({ definition, catalog, reviewMode, onSwitchMode, onSwitch
           reviewMode={reviewMode}
           onSwitchMode={onSwitchMode}
           onSwitchTactics={onSwitchTactics}
+          onSwitchComputer={onSwitchComputer}
           progressActive={progressActive}
           activeId={definition.id}
           onSelect={(id) => {
